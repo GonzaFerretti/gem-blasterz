@@ -31,28 +31,29 @@ public class GeneralManager : MonoBehaviour
         player2Board.Initialize(seed);
         
         // Ensure both players have no devices initially
-        player1Board.PlayerInput.user.UnpairDevices();
-        
-        if (player2Board.PlayerInput.user.valid)
-            player2Board.PlayerInput.user.UnpairDevices();
+        // if (player1Board.PlayerInput.user.valid)
+        //     player1Board.PlayerInput.user.UnpairDevices();
+        //
+        // if (player2Board.PlayerInput.user.valid)
+        //     player2Board.PlayerInput.user.UnpairDevices();
 
         // Get all gamepads
-        var gamepads = Gamepad.all;
-
-        // Assign keyboard to Player 1
-        InputUser.PerformPairingWithDevice(Keyboard.current, player1Board.PlayerInput.user);
-        player1Board.PlayerInput.SwitchCurrentControlScheme("Keyboard", Keyboard.current);
-
-        // Assign the first gamepad to Player 2, if available
-        if (gamepads.Count > 0)
-        {
-            InputUser.PerformPairingWithDevice(gamepads[0], player2Board.PlayerInput.user);
-            player2Board.PlayerInput.SwitchCurrentControlScheme("Gamepad", gamepads[0]);
-        }
-        else
-        {
-            Debug.LogWarning("No gamepads available for Player 2!");
-        }
+        // var gamepads = Gamepad.all;
+        //
+        // // Assign keyboard to Player 1
+        // InputUser.PerformPairingWithDevice(Keyboard.current, player1Board.PlayerInput.user);
+        // player1Board.PlayerInput.SwitchCurrentControlScheme("Keyboard", Keyboard.current);
+        //
+        // // Assign the first gamepad to Player 2, if available
+        // if (gamepads.Count > 0)
+        // {
+        //     InputUser.PerformPairingWithDevice(gamepads[0], player2Board.PlayerInput.user);
+        //     player2Board.PlayerInput.SwitchCurrentControlScheme("Gamepad", gamepads[0]);
+        // }
+        // else
+        // {
+        //     Debug.LogWarning("No gamepads available for Player 2!");
+        // }
     }
 
     private void Update()

@@ -95,11 +95,7 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 292e97f8-e9e6-42c8-9867-c7bb31d46cb8
     m_ActionName: Gameplay/RotateClockwise[/Keyboard/x]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 96d208a2-b3d1-4d6c-9ce5-e66d940d4613
-    m_ActionName: Gameplay/RotateCounterClockwise[/Keyboard/z]
-  m_NeverAutoSwitchControlSchemes: 0
+  m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: 
   m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1
