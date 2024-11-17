@@ -18,6 +18,8 @@ namespace Puzzler
         
         [SerializeField]
         private PlayerInput playerInput;
+
+        public PlayerInput PlayerInput => playerInput;
         
         [SerializeField]
         private Grid grid;
