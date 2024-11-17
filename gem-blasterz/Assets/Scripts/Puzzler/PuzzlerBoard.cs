@@ -227,8 +227,10 @@ namespace Puzzler
                     break;
                 }
             }
-            
-            if (activePiece == null && !anyMoving)
+
+            var validMatches = new List<Match>();
+            FindMatches(validMatches);
+            if (activePiece == null && !anyMoving && validMatches.Count == 0)
             {
                 var couldSpawn = false;
                 var initialPos = new int2(0, GeneralManager.GameConfig.gridSize.y - 2);
