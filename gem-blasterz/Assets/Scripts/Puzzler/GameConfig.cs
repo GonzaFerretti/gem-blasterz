@@ -31,6 +31,7 @@ namespace Puzzler
         public List<GemDefinition> gemDefinitions;
         public int2 gridSize;
         public float turnTime;
+        public int fallFasterMultipler = 2;
         public int matchNumber = 3;
         public GameObject testBackground;
     }

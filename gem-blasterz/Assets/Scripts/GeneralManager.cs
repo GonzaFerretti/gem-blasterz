@@ -20,7 +20,12 @@ public class GeneralManager : MonoBehaviour
     private int forceSeed = -1;
 
     public static GameConfig GameConfig;
-    private int lastTurn = -1;
+    private int lastBoardTurn = -1;
+    private float boardTurnTimer = 0;
+    private int lastP1Turn = -1;
+    private float p1TurnTimer = 0;
+    private int lastP2Turn = -1;
+    private float p2TurnTimer = 0;
     
     private void Start()
     {
@@ -58,19 +63,35 @@ public class GeneralManager : MonoBehaviour
 
     private void Update()
     {
-        var currentTurn = Mathf.FloorToInt(Time.time / gameConfig.turnTime);
-        if (currentTurn <= lastTurn)
-            return;
-
-        lastTurn = currentTurn;
-
-        // if (currentTurn % 4 == 0)
-        // {
-        //     player1Board.Test_GeneratePieceWave();
-        //     player2Board.Test_GeneratePieceWave();
-        // }
+        var p1Multiplier = player1Board.WantsFallFaster() ? GameConfig.fallFasterMultipler : 1;
+        if (TryAdvanceTurn(ref lastP1Turn, ref p1TurnTimer, gameConfig.turnTime / p1Multiplier))
+        {
+            player1Board.UpdatePieces();
+        }
         
-        player1Board.UpdateBoard();
-        player2Board.UpdateBoard();
+        var p2Multiplier = player2Board.WantsFallFaster() ? GameConfig.fallFasterMultipler : 1;
+        if (TryAdvanceTurn(ref lastP2Turn, ref p2TurnTimer, gameConfig.turnTime / p2Multiplier))
+        {
+            player2Board.UpdatePieces();
+        }
+
+        if (TryAdvanceTurn(ref lastBoardTurn, ref boardTurnTimer, gameConfig.turnTime))
+        {
+            player1Board.UpdateBoard();
+            player2Board.UpdateBoard();
+        }
+    }
+
+    private bool TryAdvanceTurn(ref int lastTurn, ref float turnTime, float totalTurnTime)
+    {
+        turnTime += Time.deltaTime;
+        if (turnTime >= totalTurnTime)
+        {
+            lastTurn++;
+            turnTime = 0;
+            return true;
+        }
+
+        return false;
     }
 }

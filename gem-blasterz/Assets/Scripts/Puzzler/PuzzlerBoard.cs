@@ -104,6 +104,19 @@ namespace Puzzler
             }
         }
 
+        public bool WantsFallFaster()
+        {
+            foreach (var inputAction in playerInput.actions)
+            {
+                if (inputAction.name == "FallFaster")
+                {
+                    return inputAction.IsPressed();
+                }
+            }
+
+            return false;
+        }
+
         private void OnRotateRequested(InputAction.CallbackContext obj)
         {
             var dir = obj.ReadValue<float>();
@@ -178,7 +191,6 @@ namespace Puzzler
         public void UpdateBoard()
         {
             EnsureActivePiece();
-            UpdatePieces();
 
             var blockedAny = false;
             currentGems = currentGems.OrderBy(g => g.lastGridPos.y).ToList();
@@ -268,8 +280,9 @@ namespace Puzzler
             return foundFallTarget;
         }
 
-        private void UpdatePieces()
+        public void UpdatePieces()
         {
+            Debug.Log($"Updated pieces for: {gameObject.name}");
             var brokenPieces = new List<Piece>();
             foreach (var piece in pieces)
             {
