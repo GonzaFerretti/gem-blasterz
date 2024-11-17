@@ -218,7 +218,17 @@ namespace Puzzler
 
         private void EnsureActivePiece()
         {
-            if (activePiece == null)
+            var anyMoving = false;
+            foreach (var gem in currentGems)
+            {
+                if (!gem.blocked && !gem.inPiece)
+                {
+                    anyMoving = true;
+                    break;
+                }
+            }
+            
+            if (activePiece == null && !anyMoving)
             {
                 var couldSpawn = false;
                 var initialPos = new int2(0, GeneralManager.GameConfig.gridSize.y - 2);
