@@ -177,6 +177,47 @@ namespace Puzzler
 
         public void UpdateBoard()
         {
+            EnsureActivePiece();
+            UpdatePieces();
+
+            var blockedAny = false;
+            currentGems = currentGems.OrderBy(g => g.lastGridPos.y).ToList();
+            foreach (var gem in currentGems)
+            {
+                if (!gem.inPiece)
+                {
+                    if (!gem.blocked)
+                    {
+                        if (TryFindFallTargetPos(gem, out var targetPos))
+                        {
+                            var initialPos = gem.lastGridPos;
+                            MoveGem(gem, targetPos);
+                            if (AnyCollision(initialPos, Vector3.up) && (int)initialPos.y + 1 < GeneralManager.GameConfig.gridSize.y &&  logicalGrid[(int)initialPos.x, (int)initialPos.y + 1].gem != null) 
+                                logicalGrid[(int)initialPos.x, (int)initialPos.y + 1].gem.blocked = false;
+                        }
+                        
+                        gem.blocked = true;
+                        blockedAny = true;
+                    }
+                }
+            }
+
+            var anyMoving = false;
+            foreach (var gem in currentGems)
+            {
+                if (!gem.blocked && !gem.inPiece)
+                {
+                    anyMoving = true;
+                    break;
+                }
+            }
+            if (!anyMoving && !blockedAny)
+                ClearMatchingGems();
+            LogWrongPos();
+        }
+
+        private void EnsureActivePiece()
+        {
             if (activePiece == null)
             {
                 var couldSpawn = false;
@@ -195,7 +236,28 @@ namespace Puzzler
                 if (!couldSpawn) 
                     Debug.Log($"Player from {gameObject.name} lost.");
             }
-            
+        }
+
+        private bool TryFindFallTargetPos(Gem gem, out Vector3 targetPos)
+        {
+            targetPos = default;
+            if (gem.lastGridPos.y == 0)
+                return false;
+
+            var possibleTarget = gem.lastGridPos;
+            bool foundFallTarget = false;
+            while (!AnyCollision(possibleTarget, Vector3.down))
+            {
+                possibleTarget += Vector3.down;
+                targetPos = possibleTarget;
+                foundFallTarget = true;
+            }
+
+            return foundFallTarget;
+        }
+
+        private void UpdatePieces()
+        {
             var brokenPieces = new List<Piece>();
             foreach (var piece in pieces)
             {
@@ -229,33 +291,6 @@ namespace Puzzler
                     Destroy(gem.inPieceBG);
                 }
             }
-            
-            foreach (var gem in currentGems)
-            {
-                if (!gem.inPiece)
-                {
-                    if (!AnyCollision(gem, Vector3.down))
-                    {
-                        gem.blocked = false;
-                        NudgeGem(gem, Vector3.down);
-                    }
-                    else
-                        gem.blocked = true;
-                }
-            }
-
-            var anyMoving = false;
-            foreach (var gem in currentGems)
-            {
-                if (!gem.blocked && !gem.inPiece)
-                {
-                    anyMoving = true;
-                    break;
-                }
-            }
-            if (!anyMoving)
-                ClearMatchingGems();
-            LogWrongPos();
         }
 
         private void LogWrongPos()
@@ -378,7 +413,11 @@ namespace Puzzler
 
         private bool AnyCollision(Gem gem, Vector3 offset, bool ignoreOnPiece = true)
         {
-            var targetPos = gem.lastGridPos + offset;
+            return AnyCollision(gem.lastGridPos, offset, ignoreOnPiece);
+        }
+        private bool AnyCollision(Vector3 sourcePos, Vector3 offset, bool ignoreOnPiece = true)
+        {
+            var targetPos = sourcePos + offset;
             
             if (targetPos.y < 0 || targetPos.x < 0 || targetPos.y >= GeneralManager.GameConfig.gridSize.y ||  targetPos.x >= GeneralManager.GameConfig.gridSize.x)
             {
