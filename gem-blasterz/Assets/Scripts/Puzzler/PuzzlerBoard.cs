@@ -15,6 +15,9 @@ namespace Puzzler
     public class PuzzlerBoard : MonoBehaviour
     {
         private Random rng;
+
+        [SerializeField]
+        private Transform nextPiecePreview;
         
         [SerializeField]
         private PlayerInput playerInput;
@@ -26,6 +29,9 @@ namespace Puzzler
 
         private List<Piece> pieces = new();
         private GridSlot[,] logicalGrid;
+
+        [SerializeField]
+        private List<PieceConfiguration> nextPieces = new();
 
         private Piece activePiece;
         public Piece ActivePiece => activePiece;
@@ -81,15 +87,48 @@ namespace Puzzler
             public List<Gem> gems;
         }
 
+        [Serializable]
+        public struct PieceConfiguration
+        {
+            public List<GemType> gemTypes;
+            public int turns;
+        }
+
         private struct Match
         {
             public List<Gem> matchedGems;
+        }
+
+        public void UpdateCurrentPreview()
+        {
+            foreach (var childTransform in nextPiecePreview.GetComponentInChildren<Transform>())
+            {
+                if ((childTransform as Transform).gameObject != null)
+                {
+                    Destroy((childTransform as Transform).gameObject);
+                }
+            }
+
+            var firstNextConfig = nextPieces[0];
+            var prefab0 = CreateGemPrefab(firstNextConfig.gemTypes[0], nextPiecePreview.position + Vector3.Scale(grid.cellSize, new Vector3(1f,0f, 0f)), $"Preview: {firstNextConfig.gemTypes[0].name}", nextPiecePreview, out _);
+            var prefab1 = CreateGemPrefab(firstNextConfig.gemTypes[1], nextPiecePreview.position + Vector3.Scale(grid.cellSize, new Vector3(0f,1f, 0f)), $"Preview: {firstNextConfig.gemTypes[1].name}", nextPiecePreview, out _);
+            var prefab2 = CreateGemPrefab(firstNextConfig.gemTypes[2], nextPiecePreview.position + Vector3.Scale(grid.cellSize, new Vector3(1f,1f, 0f)), $"Preview: {firstNextConfig.gemTypes[2].name}", nextPiecePreview, out _);
+
+            var center = nextPiecePreview.position + grid.cellSize / 2;
+            prefab0.transform.position = RotateAround(prefab0.transform.position, center, firstNextConfig.turns);
+            prefab1.transform.position = RotateAround(prefab1.transform.position, center, firstNextConfig.turns);
+            prefab2.transform.position = RotateAround(prefab2.transform.position, center, firstNextConfig.turns);
         }
 
         public void Initialize(uint seed)
         {
             logicalGrid = new GridSlot[GeneralManager.GameConfig.gridSize.x, GeneralManager.GameConfig.gridSize.y];
             rng = new Random(seed);
+
+            for (int i = 0; i < 4; i++) 
+                nextPieces.Add(GeneratePieceConfiguriation());
+
+            UpdateCurrentPreview();
 
             foreach (var inputAction in playerInput.actions)
             {
@@ -146,18 +185,6 @@ namespace Puzzler
                 NudgeGem(gem, offset);
         }
 
-        public void Test_GeneratePieceWave()
-        {
-            var initialPos = new int2(0, GeneralManager.GameConfig.gridSize.y - 2);
-            for (int i = 0; i < GeneralManager.GameConfig.gridSize.x / 2; i++)
-            {
-                if (CanSpawnPiece(initialPos))
-                    GeneratePieceAtPos(initialPos);
-                initialPos.x += 2;
-            }
-            LogWrongPos();
-        }
-
         public bool CanSpawnPiece(int2 pos)
         {
             if (logicalGrid[pos.x, pos.y].gem != null)
@@ -175,9 +202,9 @@ namespace Puzzler
             return true;
         }
 
-        public Piece GeneratePieceAtPos(int2 pos)
+        public Piece GeneratePieceAtPos(int2 pos, PieceConfiguration config)
         {
-            var newPiece = GeneratePiece(new Vector3(pos.x, pos.y));
+            var newPiece = GeneratePiece(new Vector3(pos.x, pos.y), config);
             pieces.Add(newPiece);
             return newPiece;
         }
@@ -250,7 +277,11 @@ namespace Puzzler
                 {
                     if (CanSpawnPiece(initialPos))
                     {
-                        activePiece = GeneratePieceAtPos(initialPos);
+                        var newPiece = nextPieces[0];
+                        nextPieces.RemoveAt(0);
+                        activePiece = GeneratePieceAtPos(initialPos, newPiece);
+                        nextPieces.Add(GeneratePieceConfiguriation());
+                        UpdateCurrentPreview();
                         couldSpawn = true;
                         break;
                     }
@@ -282,7 +313,6 @@ namespace Puzzler
 
         public void UpdatePieces()
         {
-            Debug.Log($"Updated pieces for: {gameObject.name}");
             var brokenPieces = new List<Piece>();
             foreach (var piece in pieces)
             {
@@ -461,24 +491,32 @@ namespace Puzzler
             return false;
         }
         
-        private Piece GeneratePiece(Vector3 initialPosition)
+        private Piece GeneratePiece(Vector3 initialPosition, PieceConfiguration pieceConfig)
         {
             var newPiece = new Piece(){ gems = new()};
+            
+            newPiece.gems.Add(CreateGem(pieceConfig.gemTypes[0], initialPosition + new Vector3(1f,0f, 0f), inPiece: true));
+            newPiece.gems.Add(CreateGem(pieceConfig.gemTypes[1], initialPosition + new Vector3(0f,1f, 0f), inPiece: true));
+            newPiece.gems.Add(CreateGem(pieceConfig.gemTypes[2], initialPosition + new Vector3(1f,1f, 0f), inPiece: true));
+
+            RotatePiece(newPiece, pieceConfig.turns);
+            return newPiece;
+        }
+
+        private PieceConfiguration GeneratePieceConfiguriation()
+        {
             var weightedGemTypes = new List<WeightedGem>();
             
             // Populate with definition with equal weights initially
             foreach (var definition in GeneralManager.GameConfig.gemDefinitions) 
                 weightedGemTypes.Add(new WeightedGem(){ type = definition.gemType, weight = 1f});
 
-            // Roll three times to get L shape
-            newPiece.gems.Add(CreateGem(RollNextPiece(weightedGemTypes), initialPosition + new Vector3(1f,0f, 0f), inPiece: true));
-            newPiece.gems.Add(CreateGem(RollNextPiece(weightedGemTypes), initialPosition + new Vector3(0f,1f, 0f), inPiece: true));
-            newPiece.gems.Add(CreateGem(RollNextPiece(weightedGemTypes), initialPosition + new Vector3(1f,1f, 0f), inPiece: true));
-
-            // Assign random rotation
-            var turns = rng.NextInt(4);
-            RotatePiece(newPiece, turns);
-            return newPiece;
+            var pieceConfiguration = new PieceConfiguration() { gemTypes = new() };
+            pieceConfiguration.gemTypes.Add(RollNextPiece(weightedGemTypes));
+            pieceConfiguration.gemTypes.Add(RollNextPiece(weightedGemTypes));
+            pieceConfiguration.gemTypes.Add(RollNextPiece(weightedGemTypes));
+            pieceConfiguration.turns = rng.NextInt(4);
+            return pieceConfiguration;
         }
 
         private bool CanRotatePiece(Piece piece)
@@ -519,12 +557,28 @@ namespace Puzzler
             {
                 foreach (var gem in piece.gems)
                 {
-                    var relativePos = gem.lastGridPos - center;
-                    relativePos = clockWise ? new Vector3(relativePos.y, -relativePos.x) : new Vector3(-relativePos.y, relativePos.x);
-                    var newPos = relativePos + center;
+                    var newPos = RotateAround(gem.lastGridPos, center, clockWise);
                     MoveGem(gem, newPos);
                 }
             }
+        }
+        
+        private Vector3 RotateAround(Vector3 pos, Vector3 center, int turns, bool clockWise = true)
+        {
+            var lastPos = pos;
+            for (int i = 0; i < turns; i++)
+            {
+                lastPos = RotateAround(lastPos, center, clockWise);
+            }
+
+            return lastPos;
+        }
+        
+        private Vector3 RotateAround(Vector3 pos, Vector3 center, bool clockWise = true)
+        {
+            var relativePos = pos - center;
+            relativePos = clockWise ? new Vector3(relativePos.y, -relativePos.x) : new Vector3(-relativePos.y, relativePos.x);
+            return relativePos + center;
         }
         
         private void NudgeGem(Gem gem, Vector3 offset)
@@ -545,23 +599,37 @@ namespace Puzzler
             logicalGrid[(int)gridPos.x, (int)gridPos.y].gem = gem;
             gem.model.name = $"{gem.type.name}: ({gridPos.x}, {gridPos.y})";
         }
-
-        private Gem CreateGem(GemType gemType, Vector3 gridPos, bool inPiece = false)
+        
+        private GameObject CreateGemPrefab(GemType gemType, Vector3 worldPos, string name, Transform parentTransform, out GameObject bg)
         {
             var gemDefinition = GeneralManager.GameConfig.GetGemDefinition(gemType);
-            var model = Instantiate(gemDefinition.prefab, grid.LocalToWorld(gridPos), Quaternion.identity);
-            model.transform.SetParent(transform);
-            model.name = $"{gemType.name}: ({gridPos.x}, {gridPos.y})";
-            var gem = new Gem() { type = gemType, model = model, lastGridPos = gridPos };
-            gem.inPiece = inPiece;
-            var bg = Instantiate(GeneralManager.GameConfig.testBackground, gem.model.transform.position, Quaternion.identity);
-            bg.transform.SetParent(gem.model.transform);
-            gem.inPieceBG = bg;
+            var model = Instantiate(gemDefinition.prefab, worldPos, Quaternion.identity);
+            model.transform.SetParent(parentTransform);
+            model.name = name;
+            bg = Instantiate(GeneralManager.GameConfig.testBackground, model.transform.position, Quaternion.identity);
+            bg.transform.SetParent(model.transform);
+            return model;
+        }
+        
+        private Gem CreateGem(GemType gemType, Vector3 gridPos, bool inPiece = false)
+        {
+            var worldPos = grid.LocalToWorld(gridPos);
+            var model = CreateGemPrefab(gemType, worldPos, $"{gemType.name}: ({gridPos.x}, {gridPos.y})", transform, out var bg);
+           
+            var gem = new Gem()
+            {
+                type = gemType, 
+                model = model, 
+                lastGridPos = gridPos,
+                inPiece = inPiece,
+                inPieceBG = bg
+            };
+            
             currentGems.Add(gem);
             logicalGrid[(int)gridPos.x, (int)gridPos.y].gem = gem;
             return gem;
         }
-
+        
         private GemType RollNextPiece(List<WeightedGem> gemTypes)
         {
             var totalWeight = 0f;
@@ -583,12 +651,6 @@ namespace Puzzler
             }
 
             throw new Exception("No gem rolled, how?");
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            
         }
     }
 }
