@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cbfd553e4604b7286049cecbf10b4e6, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier: 
+  gemDefinitions:
+  - gemType:
+      name: Amber
+    prefab: {fileID: 1765389239311654329, guid: 7d88722c739e16e44b8b8f4cb61e4a58,
+      type: 3}
+  - gemType:
+      name: Sapphire
+    prefab: {fileID: 2832582678302082305, guid: cf130a4394ee5e84b99ff9979d87f59a,
+      type: 3}
+  - gemType:
+      name: Ruby
+    prefab: {fileID: 9010067420111695278, guid: 1ae53a26ae2ebab48ab3146e4c527de0,
+      type: 3}
+  - gemType:
+      name: Emerald
+    prefab: {fileID: 824440121974288760, guid: dfa5cba3257afe74bba49a773a7ad4f3, type: 3}
+  gridSize:
+    x: 6
+    y: 12
+  turnTime: 0.3
+  matchNumber: 3
+  testBackground: {fileID: 6425596918352745791, guid: 0570364fc5e1d3044bccbfae179a3658,
+    type: 3}
