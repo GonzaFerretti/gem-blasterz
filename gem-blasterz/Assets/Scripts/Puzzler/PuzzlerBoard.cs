@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using Quaternion = UnityEngine.Quaternion;
 using Random = Unity.Mathematics.Random;
@@ -12,6 +13,17 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace Puzzler
 {
+    [Serializable]
+    public class OnPuzzlerMatch : UnityEvent<OnPuzzlerMatch.CurrentCombo>
+    {
+        [Serializable]
+        public struct CurrentCombo
+        {
+            public PuzzlerBoard.Match match;
+            public int comboCount;
+        }
+    }
+    
     public class PuzzlerBoard : MonoBehaviour
     {
         private Random rng;
@@ -44,6 +56,12 @@ namespace Puzzler
         
         [SerializeField]
         private List<Gem> currentGems;
+
+        [SerializeField] 
+        private int comboCount = 0;
+
+        [SerializeField] 
+        private OnPuzzlerMatch OnPuzzlerMatch; 
 
         [Serializable]
         public struct GridSlot
@@ -101,7 +119,8 @@ namespace Puzzler
             public int turns;
         }
 
-        private struct Match
+        [Serializable]
+        public struct Match
         {
             public List<Gem> matchedGems;
             public int scrapCount;
@@ -342,6 +361,10 @@ namespace Puzzler
 
                 if (!couldSpawn) 
                     Debug.Log($"Player from {gameObject.name} lost.");
+                else
+                {
+                    comboCount = 0;
+                }
             }
         }
 
@@ -436,6 +459,13 @@ namespace Puzzler
                     if (matchedGem != null)
                         DestroyGem(matchedGem);
                 }
+
+                comboCount++;
+            }
+
+            if (validMatches.Count > 0)
+            {
+                OnPuzzlerMatch?.Invoke(new OnPuzzlerMatch.CurrentCombo(){ match = validMatches[^1], comboCount = comboCount});
             }
         }
 
