@@ -30,6 +30,7 @@ namespace Cosmetics.Audio
                     note = 7;
                     break;
                 default:
+                    note = 12;
                     break;
             }
             return Mathf.Pow(2, (note) / 12.0f);
