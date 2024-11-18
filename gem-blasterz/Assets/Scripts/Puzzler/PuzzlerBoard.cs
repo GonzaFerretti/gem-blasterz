@@ -75,7 +75,6 @@ namespace Puzzler
         {
             public GemType type;
             public GameObject model;
-            public GameObject inPieceBG;
             public Vector3 lastGridPos;
             public bool inPiece;
             public bool blocked;
@@ -110,9 +109,9 @@ namespace Puzzler
             }
 
             var firstNextConfig = nextPieces[0];
-            var prefab0 = CreateGemPrefab(firstNextConfig.gemTypes[0], nextPiecePreview.position + Vector3.Scale(grid.cellSize, new Vector3(1f,0f, 0f)), $"Preview: {firstNextConfig.gemTypes[0].name}", nextPiecePreview, out _);
-            var prefab1 = CreateGemPrefab(firstNextConfig.gemTypes[1], nextPiecePreview.position + Vector3.Scale(grid.cellSize, new Vector3(0f,1f, 0f)), $"Preview: {firstNextConfig.gemTypes[1].name}", nextPiecePreview, out _);
-            var prefab2 = CreateGemPrefab(firstNextConfig.gemTypes[2], nextPiecePreview.position + Vector3.Scale(grid.cellSize, new Vector3(1f,1f, 0f)), $"Preview: {firstNextConfig.gemTypes[2].name}", nextPiecePreview, out _);
+            var prefab0 = CreateGemPrefab(firstNextConfig.gemTypes[0], nextPiecePreview.position + Vector3.Scale(grid.cellSize, new Vector3(1f,0f, 0f)), $"Preview: {firstNextConfig.gemTypes[0].name}", nextPiecePreview);
+            var prefab1 = CreateGemPrefab(firstNextConfig.gemTypes[1], nextPiecePreview.position + Vector3.Scale(grid.cellSize, new Vector3(0f,1f, 0f)), $"Preview: {firstNextConfig.gemTypes[1].name}", nextPiecePreview);
+            var prefab2 = CreateGemPrefab(firstNextConfig.gemTypes[2], nextPiecePreview.position + Vector3.Scale(grid.cellSize, new Vector3(1f,1f, 0f)), $"Preview: {firstNextConfig.gemTypes[2].name}", nextPiecePreview);
 
             var center = nextPiecePreview.position + grid.cellSize / 2;
             prefab0.transform.position = RotateAround(prefab0.transform.position, center, firstNextConfig.turns);
@@ -355,7 +354,6 @@ namespace Puzzler
                 foreach (var gem in brokenPiece.gems)
                 {
                     gem.inPiece = false;
-                    Destroy(gem.inPieceBG);
                 }
             }
         }
@@ -612,29 +610,26 @@ namespace Puzzler
             gem.model.name = $"{gem.type.name}: ({gridPos.x}, {gridPos.y})";
         }
         
-        private GameObject CreateGemPrefab(GemType gemType, Vector3 worldPos, string name, Transform parentTransform, out GameObject bg)
+        private GameObject CreateGemPrefab(GemType gemType, Vector3 worldPos, string name, Transform parentTransform)
         {
             var gemDefinition = GeneralManager.GameConfig.GetGemDefinition(gemType);
             var model = Instantiate(gemDefinition.prefab, worldPos, Quaternion.identity);
             model.transform.SetParent(parentTransform);
             model.name = name;
-            bg = Instantiate(GeneralManager.GameConfig.testBackground, model.transform.position, Quaternion.identity);
-            bg.transform.SetParent(model.transform);
             return model;
         }
         
         private Gem CreateGem(GemType gemType, Vector3 gridPos, bool inPiece = false)
         {
             var worldPos = grid.LocalToWorld(gridPos);
-            var model = CreateGemPrefab(gemType, worldPos, $"{gemType.name}: ({gridPos.x}, {gridPos.y})", transform, out var bg);
+            var model = CreateGemPrefab(gemType, worldPos, $"{gemType.name}: ({gridPos.x}, {gridPos.y})", transform);
            
             var gem = new Gem()
             {
                 type = gemType, 
                 model = model, 
                 lastGridPos = gridPos,
-                inPiece = inPiece,
-                inPieceBG = bg
+                inPiece = inPiece
             };
             
             currentGems.Add(gem);

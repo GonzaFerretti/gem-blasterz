@@ -34,6 +34,5 @@ namespace Puzzler
         public int fallFasterMultipler = 2;
         public float heldPressTurnTimeMultiplier = 0.125f;
         public int matchNumber = 3;
-        public GameObject testBackground;
     }
 }
