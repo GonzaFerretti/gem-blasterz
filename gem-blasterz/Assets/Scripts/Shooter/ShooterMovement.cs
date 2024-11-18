@@ -18,11 +18,16 @@ public class ShooterController : MonoBehaviour
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private float fireCooldown = 1f;
+    private bool isDisabled = false;
 
     private float lastFireTime; 
 
     public void decreaseHP(float damage){
         hp = Mathf.Max(hp - damage,0);
+        if (hp <= 0)
+        {
+            StartCoroutine(HandleDeath());
+        }
     }
 
     private void Awake()
@@ -37,6 +42,8 @@ public class ShooterController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isDisabled)
+            return;
         healthBar.value = hp / maxHP;
         Vector3 movement = new Vector3(0f, moveInput.y, moveInput.x);
         shooterRB.velocity = movement * moveSpeed;
@@ -49,12 +56,26 @@ public class ShooterController : MonoBehaviour
     }
 
     public void Shoot(){
-        if (Time.time >= lastFireTime + fireCooldown){
+        if (Time.time >= lastFireTime + fireCooldown && !isDisabled){
             Debug.Log("Shooting");
             GameObject bullet = Instantiate(bulletPrefab,firePoint.position,Quaternion.identity);
             Vector3 shootDirection = (markerTransform.position - firePoint.position).normalized;
-            bullet.GetComponent<Bullet>().Initialize(shootDirection);
+            bullet.GetComponent<Bullet>().Initialize(shootDirection,this.gameObject);
             lastFireTime = Time.time;
         }
+    }
+
+    private IEnumerator HandleDeath()
+    {
+        Debug.Log("Player is disabled!");
+        isDisabled = true; 
+        Vector3 movement = new Vector3(0f,0f,0f);
+        shooterRB.velocity = movement * moveSpeed;
+
+        yield return new WaitForSeconds(5f); 
+
+        Debug.Log("Player recovered!");
+        hp = maxHP;
+        isDisabled = false;
     }
 }
