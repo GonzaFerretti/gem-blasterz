@@ -621,21 +621,6 @@ PrefabInstance:
       propertyPath: nextPiecePreview
       value: 
       objectReference: {fileID: 93305404}
-    - target: {fileID: 1015862231982902487, guid: daf7ebf910a4bc144997fdadd01a3931,
-        type: 3}
-      propertyPath: m_CellGap.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1015862231982902487, guid: daf7ebf910a4bc144997fdadd01a3931,
-        type: 3}
-      propertyPath: m_CellGap.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1015862231982902487, guid: daf7ebf910a4bc144997fdadd01a3931,
-        type: 3}
-      propertyPath: m_CellGap.z
-      value: 0.5
-      objectReference: {fileID: 0}
     - target: {fileID: 1773623961248006102, guid: daf7ebf910a4bc144997fdadd01a3931,
         type: 3}
       propertyPath: m_RootOrder
