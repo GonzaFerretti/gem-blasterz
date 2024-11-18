@@ -345,6 +345,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 136686921216144330, guid: daf7ebf910a4bc144997fdadd01a3931,
         type: 3}
+      propertyPath: ship
+      value: 
+      objectReference: {fileID: 1045198997}
+    - target: {fileID: 136686921216144330, guid: daf7ebf910a4bc144997fdadd01a3931,
+        type: 3}
       propertyPath: nextPiecePreview
       value: 
       objectReference: {fileID: 1470798059}
@@ -9642,6 +9647,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1045198995}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1045198997 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7853827017715617711, guid: 1d17c5b209d943346a30a2e3a83f75d8,
+    type: 3}
+  m_PrefabInstance: {fileID: 1045198995}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 972532ee92a2401499072edf683dfe87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1052811381
 GameObject:
   m_ObjectHideFlags: 0
@@ -19415,6 +19432,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 136686921216144330, guid: daf7ebf910a4bc144997fdadd01a3931,
         type: 3}
+      propertyPath: ship
+      value: 
+      objectReference: {fileID: 4647012410398049018}
+    - target: {fileID: 136686921216144330, guid: daf7ebf910a4bc144997fdadd01a3931,
+        type: 3}
       propertyPath: nextPiecePreview
       value: 
       objectReference: {fileID: 1155888016}
@@ -19632,5 +19654,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 63740cce5f464ac38bd2674afccb9077, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4647012410398049018 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7853827017715617711, guid: 1d17c5b209d943346a30a2e3a83f75d8,
+    type: 3}
+  m_PrefabInstance: {fileID: 4647012410398049016}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 972532ee92a2401499072edf683dfe87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

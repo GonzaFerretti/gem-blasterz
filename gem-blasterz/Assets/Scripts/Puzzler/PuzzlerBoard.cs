@@ -38,6 +38,9 @@ namespace Puzzler
 
         private Piece activePiece;
         public Piece ActivePiece => activePiece;
+
+        [SerializeField] 
+        private Ship ship;
         
         [SerializeField]
         private List<Gem> currentGems;
@@ -107,6 +110,31 @@ namespace Puzzler
         public void Update()
         {
             if (Input.GetKeyDown(KeyCode.H)) CorruptNextPiece();
+            
+            if (ship != null)
+                ship.UpdateSideFillPercentage(GetFillPercentage());
+        }
+
+        private float GetFillPercentage()
+        {
+            var rows = GeneralManager.GameConfig.gridSize.x;
+            var cols = GeneralManager.GameConfig.gridSize.y;
+            for (int j = cols - 1; j >= 0; j--)
+            {
+                int filledCount = 0;
+                for (int i = rows - 1; i >= 0; i--)
+                {
+                    if (logicalGrid[i, j].gem != null && logicalGrid[i, j].gem.blocked) 
+                        filledCount++;
+                }
+
+                if (filledCount >= rows - 2) // 4 out of six sounds filled-ish
+                {
+                    return (j + 1) / (float)cols;
+                }
+            }
+
+            return 0f;
         }
 
         public void UpdateCurrentPreview()
@@ -487,7 +515,7 @@ namespace Puzzler
             var gridX = (int)gem.lastGridPos.x;
             var gridY = (int)gem.lastGridPos.y;
 
-            if (AnyCollision(gem, Vector3.up) && logicalGrid[gridX, gridY + 1].gem != null) 
+            if (AnyCollision(gem, Vector3.up) && gridY + 1 < GeneralManager.GameConfig.gridSize.y && logicalGrid[gridX, gridY + 1].gem != null) 
                 logicalGrid[gridX, gridY + 1].gem.blocked = false;
             
             logicalGrid[gridX, gridY].gem = null;
