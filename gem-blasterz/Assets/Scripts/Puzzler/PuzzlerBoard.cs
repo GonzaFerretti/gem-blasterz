@@ -33,6 +33,9 @@ namespace Puzzler
         [SerializeField]
         private List<PieceConfiguration> nextPieces = new();
 
+        [SerializeField]
+        private PuzzlePreviewWidgetManager puzzlePreviewWidgetManager;
+
         private Piece activePiece;
         public Piece ActivePiece => activePiece;
         
@@ -125,6 +128,8 @@ namespace Puzzler
             prefab0.transform.position = RotateAround(prefab0.transform.position, center, firstNextConfig.turns);
             prefab1.transform.position = RotateAround(prefab1.transform.position, center, firstNextConfig.turns);
             prefab2.transform.position = RotateAround(prefab2.transform.position, center, firstNextConfig.turns);
+
+            puzzlePreviewWidgetManager.UpdatePreviews(nextPieces);
         }
 
         public void Initialize(uint seed)
@@ -614,7 +619,7 @@ namespace Puzzler
             }
         }
         
-        private Vector3 RotateAround(Vector3 pos, Vector3 center, int turns, bool clockWise = true)
+        public static Vector3 RotateAround(Vector3 pos, Vector3 center, int turns, bool clockWise = true)
         {
             var lastPos = pos;
             for (int i = 0; i < turns; i++)
@@ -625,7 +630,7 @@ namespace Puzzler
             return lastPos;
         }
         
-        private Vector3 RotateAround(Vector3 pos, Vector3 center, bool clockWise = true)
+        private static Vector3 RotateAround(Vector3 pos, Vector3 center, bool clockWise = true)
         {
             var relativePos = pos - center;
             relativePos = clockWise ? new Vector3(relativePos.y, -relativePos.x) : new Vector3(-relativePos.y, relativePos.x);

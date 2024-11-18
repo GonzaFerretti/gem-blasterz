@@ -14,6 +14,7 @@ namespace Puzzler
         {
             public PuzzlerBoard.GemType gemType;
             public GameObject prefab;
+            public Color previewColor;
         }
         
         public GemDefinition GetGemDefinition(string name)

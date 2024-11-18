@@ -18,25 +18,30 @@ MonoBehaviour:
       isScrap: 0
     prefab: {fileID: 1765389239311654329, guid: 7d88722c739e16e44b8b8f4cb61e4a58,
       type: 3}
+    previewColor: {r: 0.8396226, g: 0.69636554, b: 0.22574759, a: 1}
   - gemType:
       name: Sapphire
       isScrap: 0
     prefab: {fileID: 2832582678302082305, guid: cf130a4394ee5e84b99ff9979d87f59a,
       type: 3}
+    previewColor: {r: 0.2981043, g: 0.36645088, b: 0.8207547, a: 1}
   - gemType:
       name: Ruby
       isScrap: 0
     prefab: {fileID: 9010067420111695278, guid: 1ae53a26ae2ebab48ab3146e4c527de0,
       type: 3}
+    previewColor: {r: 0.8113208, g: 0.2810053, b: 0.26406196, a: 1}
   - gemType:
       name: Emerald
       isScrap: 0
     prefab: {fileID: 824440121974288760, guid: dfa5cba3257afe74bba49a773a7ad4f3, type: 3}
+    previewColor: {r: 0.41901034, g: 0.8301887, b: 0.4405436, a: 1}
   - gemType:
       name: Scrap
       isScrap: 1
     prefab: {fileID: 5632742144275814796, guid: 05ccf21ab21e1b94c852400d4dbd83f7,
       type: 3}
+    previewColor: {r: 0.6797793, g: 0.7169812, b: 0.7031937, a: 1}
   gridSize:
     x: 6
     y: 12
