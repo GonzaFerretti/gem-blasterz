@@ -15,6 +15,17 @@ namespace Puzzler
             public PuzzlerBoard.GemType gemType;
             public GameObject prefab;
         }
+        
+        public GemDefinition GetGemDefinition(string name)
+        {
+            foreach (var gemDefinition in gemDefinitions)
+            {
+                if (gemDefinition.gemType.name.Equals(name))
+                    return gemDefinition;
+            }
+
+            throw new Exception("This shouldn't happen");
+        }
 
         public GemDefinition GetGemDefinition(PuzzlerBoard.GemType gemType)
         {

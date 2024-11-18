@@ -49,6 +49,8 @@ namespace Puzzler
         public struct GemType : IEquatable<GemType>
         {
             public string name;
+            public bool isScrap;
+            
             public bool Equals(GemType other)
             {
                 return name == other.name;
@@ -96,6 +98,12 @@ namespace Puzzler
         private struct Match
         {
             public List<Gem> matchedGems;
+            public int scrapCount;
+        }
+
+        public void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.H)) CorruptNextPiece();
         }
 
         public void UpdateCurrentPreview()
@@ -392,7 +400,8 @@ namespace Puzzler
             {
                 foreach (var matchedGem in validMatch.matchedGems)
                 {
-                    DestroyGem(matchedGem);
+                    if (matchedGem != null)
+                        DestroyGem(matchedGem);
                 }
             }
         }
@@ -410,49 +419,54 @@ namespace Puzzler
             {
                 for (int j = 0; j < cols; j++)
                 {
-                    if (!visited[i, j] && logicalGrid[i, j].gem != null)
+                    if (visited[i, j] || logicalGrid[i, j].gem == null || logicalGrid[i, j].gem.type.isScrap) continue;
+                    // Get the gem type dynamically for the current cell
+                    var gemType = logicalGrid[i, j].gem.type;
+                    var matches = new Match() { matchedGems = new List<Gem>() };
+                    stack.Push((i, j));
+
+                    while (stack.Count > 0)
                     {
-                        // Get the gem type dynamically for the current cell
-                        var gemType = logicalGrid[i, j].gem.type;
-                        var matches = new Match() { matchedGems = new List<Gem>() };
-                        stack.Push((i, j));
+                        var (x, y) = stack.Pop();
+                        if (x < 0 || x >= rows || y < 0 || y >= cols)
+                            continue; // Out of bounds
 
-                        while (stack.Count > 0)
+                        if (visited[x, y])
+                            continue; // Already visited
+
+                        if (IsCellEmpty(x, y))
+                            continue; // No gem in this cell
+
+                        var gridSlot = logicalGrid[x, y];
+                        if (gridSlot.gem.inPiece)
+                            continue; // Gem is part of a piece, skip it
+
+                        if (!gridSlot.gem.blocked)
+                            continue; // Gem is not blocked, skip it
+
+                        if (!gridSlot.gem.type.isScrap && !gridSlot.gem.type.Equals(gemType))
+                            continue; // Gem type does not match
+
+                        visited[x, y] = !gridSlot.gem.type.isScrap; // Scrap can be visited multiple times
+                        matches.matchedGems.Add(gridSlot.gem);
+
+                        if (gridSlot.gem.type.isScrap)
                         {
-                            var (x, y) = stack.Pop();
-                            if (x < 0 || x >= rows || y < 0 || y >= cols)
-                                continue; // Out of bounds
-
-                            if (visited[x, y])
-                                continue; // Already visited
-
-                            if (IsCellEmpty(x, y))
-                                continue; // No gem in this cell
-
-                            if (logicalGrid[x, y].gem.inPiece)
-                                continue; // Gem is part of a piece, skip it
-
-                            if (!logicalGrid[x, y].gem.blocked)
-                                continue; // Gem is not blocked, skip it
-
-                            if (!logicalGrid[x, y].gem.type.Equals(gemType))
-                                continue; // Gem type does not match
-
-                            visited[x, y] = true;
-                            matches.matchedGems.Add(logicalGrid[x, y].gem);
-
-                            // Push neighboring cells to the stack
-                            foreach (var dir in directions)
-                            {
-                                stack.Push((x + dir.x, y + dir.y));
-                            }
+                            matches.scrapCount++;
+                            continue;
                         }
 
-                        // Only add the match if it has the required number of gems
-                        if (matches.matchedGems.Count >= GeneralManager.GameConfig.matchNumber)
+                        // Push neighboring cells to the stack
+                        foreach (var dir in directions)
                         {
-                            validMatches.Add(matches);
+                            stack.Push((x + dir.x, y + dir.y));
                         }
+                    }
+
+                    // Only add the match if it has the required number of gems
+                    if (matches.matchedGems.Count - matches.scrapCount >= GeneralManager.GameConfig.matchNumber)
+                    {
+                        validMatches.Add(matches);
                     }
                 }
             }
@@ -513,13 +527,40 @@ namespace Puzzler
             return newPiece;
         }
 
+        public void CorruptNextPiece()
+        {
+            var scrap = GeneralManager.GameConfig.GetGemDefinition("Scrap").gemType;
+            for (var index = 0; index < nextPieces.Count; index++)
+            {
+                var configuration = nextPieces[index];
+                var availableIndices = new List<int>();
+                for (var j = 0; j < configuration.gemTypes.Count; j++)
+                {
+                    var gemType = configuration.gemTypes[j];
+                    if (!gemType.isScrap) availableIndices.Add(j);
+                }
+
+                if (availableIndices.Count > 0)
+                {
+                    var indexToCurse = availableIndices[UnityEngine.Random.Range(0, availableIndices.Count)];
+                    configuration.gemTypes[indexToCurse] = scrap;
+                    nextPieces[index] = configuration;
+                    UpdateCurrentPreview();
+                    return;
+                }
+            }
+        }
+
         private PieceConfiguration GeneratePieceConfiguriation()
         {
             var weightedGemTypes = new List<WeightedGem>();
             
             // Populate with definition with equal weights initially
-            foreach (var definition in GeneralManager.GameConfig.gemDefinitions) 
-                weightedGemTypes.Add(new WeightedGem(){ type = definition.gemType, weight = 1f});
+            foreach (var definition in GeneralManager.GameConfig.gemDefinitions)
+            {
+                if (!definition.gemType.isScrap)
+                    weightedGemTypes.Add(new WeightedGem(){ type = definition.gemType, weight = 1f});
+            }
 
             var pieceConfiguration = new PieceConfiguration() { gemTypes = new() };
             pieceConfiguration.gemTypes.Add(RollNextPiece(weightedGemTypes));
