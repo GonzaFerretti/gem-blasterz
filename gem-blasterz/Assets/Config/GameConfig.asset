@@ -49,3 +49,45 @@ MonoBehaviour:
   fallFasterMultipler: 4
   heldPressTurnTimeMultiplier: 0.125
   matchNumber: 3
+  comboPitchCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.0049309996
+      value: -0.0027056432
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.0027852
+      value: 1.0054841
+      inSlope: 0.36107406
+      outSlope: 0.36107406
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 2.0211928
+      value: 1.187489
+      inSlope: 0.2065673
+      outSlope: 0.2065673
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 3.015292
+      value: 1.4212022
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

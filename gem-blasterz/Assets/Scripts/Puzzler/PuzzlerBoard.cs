@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Cosmetics.Audio;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
@@ -128,7 +129,18 @@ namespace Puzzler
 
         public void Update()
         {
-            if (Input.GetKeyDown(KeyCode.H)) CorruptNextPiece();
+            if (Input.GetKeyDown(KeyCode.H))
+            {
+                ComboSounds.PlayComboSound(new OnPuzzlerMatch.CurrentCombo(){ comboCount = 1});
+            }
+            if (Input.GetKeyDown(KeyCode.J))
+            {
+                ComboSounds.PlayComboSound(new OnPuzzlerMatch.CurrentCombo(){ comboCount = 2});
+            }
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                ComboSounds.PlayComboSound(new OnPuzzlerMatch.CurrentCombo(){ comboCount = 3});
+            }
             
             if (ship != null)
                 ship.UpdateSideFillPercentage(GetFillPercentage());
@@ -200,6 +212,11 @@ namespace Puzzler
                     inputAction.performed += OnRotateRequested;
                 }
             }
+
+            if (ship != null)
+            {
+                GeneralManager.Sound.PlayAtPos("spaceShipHum", ship.transform.position, gameObject.name);
+            }
         }
 
         public bool WantsFallFaster()
@@ -224,6 +241,12 @@ namespace Puzzler
             if (!CanRotatePiece(activePiece)) return;
             
             RotatePiece(activePiece, 1, (int)math.sign(dir) == 1);
+
+            if (ship)
+                GeneralManager.Sound.PlayAtPos("pieceRotate", ship.transform.position, gameObject.name);
+            else
+                GeneralManager.Sound.Play("pieceRotate");
+
         }
 
         private void OnMoveRequested(InputAction.CallbackContext obj)
@@ -459,12 +482,11 @@ namespace Puzzler
                     if (matchedGem != null)
                         DestroyGem(matchedGem);
                 }
-
-                comboCount++;
             }
 
             if (validMatches.Count > 0)
             {
+                comboCount++;
                 OnPuzzlerMatch?.Invoke(new OnPuzzlerMatch.CurrentCombo(){ match = validMatches[^1], comboCount = comboCount});
             }
         }

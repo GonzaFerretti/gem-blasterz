@@ -17,9 +17,13 @@ public class GeneralManager : MonoBehaviour
     private GameConfig gameConfig;
 
     [SerializeField] 
+    private SoundManager sound;
+
+    [SerializeField] 
     private int forceSeed = -1;
 
     public static GameConfig GameConfig;
+    public static SoundManager Sound;
     private float boardTurnTimer = 0;
     private float p1TurnTimer = 0;
     private float p1HeldPressTimer = 0;
@@ -28,6 +32,7 @@ public class GeneralManager : MonoBehaviour
     
     private void Start()
     {
+        Sound = sound;
         GameConfig = gameConfig;
         uint seed = forceSeed > 0 ? (uint)forceSeed : (uint)Random.Range(1, uint.MaxValue);
         Debug.Log($"CurrentSeed: {seed}");

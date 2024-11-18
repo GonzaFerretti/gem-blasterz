@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 136686921216144330}
   - component: {fileID: 1015862231982902487}
   - component: {fileID: 2470706822038522892}
+  - component: {fileID: 6504862366547787629}
   m_Layer: 0
   m_Name: PlayerBoard
   m_TagString: Untagged
@@ -134,7 +135,25 @@ MonoBehaviour:
   playerInput: {fileID: 2470706822038522892}
   grid: {fileID: 1015862231982902487}
   nextPieces: []
+  puzzlePreviewWidgetManager: {fileID: 0}
+  ship: {fileID: 0}
   currentGems: []
+  comboCount: 0
+  OnPuzzlerMatch:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6504862366547787629}
+        m_TargetAssemblyTypeName: Cosmetics.Audio.ComboSounds, Assembly-CSharp
+        m_MethodName: PlayComboSound
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!156049354 &1015862231982902487
 Grid:
   m_ObjectHideFlags: 0
@@ -194,3 +213,15 @@ MonoBehaviour:
   m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &6504862366547787629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6003065232625783203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b264e169792e4cf096cc3ccbea774949, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
