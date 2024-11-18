@@ -29,14 +29,6 @@ MonoBehaviour:
     isSpatial: 1
     position: {x: 0, y: 0, z: 0}
     positionIdentifier: 
-  - identifier: spaceShipHum
-    file: {fileID: 8300000, guid: 5f64d07e7fbdb254e9d1fd237a23ffc7, type: 3}
-    volume: 0.012
-    pitch: 1
-    shouldLoop: 1
-    isSpatial: 1
-    position: {x: 0, y: 0, z: 0}
-    positionIdentifier: 
   - identifier: comboSound1
     file: {fileID: 8300000, guid: 74164e1fe139cda48bb673a55e5b9be2, type: 3}
     volume: 0.498
