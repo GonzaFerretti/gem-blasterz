@@ -172,8 +172,13 @@ namespace Puzzler
             var dir = obj.ReadValue<float>();
 
             if (activePiece == null) return;
-            if (dir == 0) return;
 
+            MoveActivePiece(dir);
+        }
+
+        private void MoveActivePiece(float dir)
+        {
+            if (dir == 0) return;
             var offset = Vector3.right * math.sign(dir);
             foreach (var gem in activePiece.gems)
             {
@@ -253,6 +258,13 @@ namespace Puzzler
             if (!anyMoving && !blockedAny)
                 ClearMatchingGems();
             LogWrongPos();
+        }
+
+        public void TryMoveHeld()
+        {
+            var moveHoldAction = playerInput.actions.FindAction("MoveHold");
+            if (activePiece != null && moveHoldAction.phase == InputActionPhase.Performed)
+                MoveActivePiece(moveHoldAction.ReadValue<float>());
         }
 
         private void EnsureActivePiece()

@@ -33,6 +33,7 @@ MonoBehaviour:
     y: 12
   turnTime: 0.3
   fallFasterMultipler: 3
+  heldPressTurnTimeMultiplier: 0.125
   matchNumber: 3
   testBackground: {fileID: 6425596918352745791, guid: 0570364fc5e1d3044bccbfae179a3658,
     type: 3}

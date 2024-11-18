@@ -20,11 +20,10 @@ public class GeneralManager : MonoBehaviour
     private int forceSeed = -1;
 
     public static GameConfig GameConfig;
-    private int lastBoardTurn = -1;
     private float boardTurnTimer = 0;
-    private int lastP1Turn = -1;
     private float p1TurnTimer = 0;
-    private int lastP2Turn = -1;
+    private float p1HeldPressTimer = 0;
+    private float p2HeldPressTimer = 0;
     private float p2TurnTimer = 0;
     
     private void Start()
@@ -63,31 +62,40 @@ public class GeneralManager : MonoBehaviour
 
     private void Update()
     {
+        if (TryAdvanceTurn(ref p1HeldPressTimer, GameConfig.heldPressTurnTimeMultiplier))
+        {
+            player1Board.TryMoveHeld();
+        }
+        
+        if (TryAdvanceTurn(ref p2HeldPressTimer, GameConfig.heldPressTurnTimeMultiplier))
+        {
+            player2Board.TryMoveHeld();
+        }
+        
         var p1Multiplier = player1Board.WantsFallFaster() ? GameConfig.fallFasterMultipler : 1;
-        if (TryAdvanceTurn(ref lastP1Turn, ref p1TurnTimer, gameConfig.turnTime / p1Multiplier))
+        if (TryAdvanceTurn(ref p1TurnTimer, gameConfig.turnTime / p1Multiplier))
         {
             player1Board.UpdatePieces();
         }
         
         var p2Multiplier = player2Board.WantsFallFaster() ? GameConfig.fallFasterMultipler : 1;
-        if (TryAdvanceTurn(ref lastP2Turn, ref p2TurnTimer, gameConfig.turnTime / p2Multiplier))
+        if (TryAdvanceTurn(ref p2TurnTimer, gameConfig.turnTime / p2Multiplier))
         {
             player2Board.UpdatePieces();
         }
 
-        if (TryAdvanceTurn(ref lastBoardTurn, ref boardTurnTimer, gameConfig.turnTime))
+        if (TryAdvanceTurn(ref boardTurnTimer, gameConfig.turnTime))
         {
             player1Board.UpdateBoard();
             player2Board.UpdateBoard();
         }
     }
 
-    private bool TryAdvanceTurn(ref int lastTurn, ref float turnTime, float totalTurnTime)
+    private bool TryAdvanceTurn(ref float turnTime, float totalTurnTime = 1)
     {
         turnTime += Time.deltaTime;
         if (turnTime >= totalTurnTime)
         {
-            lastTurn++;
             turnTime = 0;
             return true;
         }
