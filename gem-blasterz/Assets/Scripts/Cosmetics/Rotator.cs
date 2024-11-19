@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Rotator : MonoBehaviour
 {
@@ -14,17 +16,28 @@ public class Rotator : MonoBehaviour
     [Tooltip("The speed of the rotation oscillation.")]
     public float speed = 1f;
 
+    [Header("Cycle Animation Settings")]
+    [Tooltip("The interval between each cycle animation in seconds.")]
+    public float cycleInterval = 5f;
+    public float cycleIntervalVariation = 1;
+
+    public float fadeSpeed;
     private float _time;
+    private float _cycleTimer;
+    private bool _isCycling;
 
-    public bool idleAnimation;
+    [Range(0, 1)]
+    public float currentAmplitudeMultiplier;
 
-    public float fadeTime, fadeSpeed;
-    public float currentTimeMultiplier;
+    private void Awake()
+    {
+        cycleInterval = cycleInterval + Random.Range(-cycleIntervalVariation / 2, cycleIntervalVariation / 2);
+    }
 
     void Update()
     {
-        CycleAnimation();
         Sway();
+        HandleCycleAnimation();
     }
 
     public void Sway()
@@ -33,18 +46,36 @@ public class Rotator : MonoBehaviour
         _time += Time.deltaTime * speed;
 
         // Calculate the new rotation angle using sine wave
-        float angle = Mathf.Sin(_time) * amplitude * currentTimeMultiplier;
+        float angle = Mathf.Sin(_time) * amplitude * currentAmplitudeMultiplier;
 
         // Apply the rotation to the object
         transform.localRotation = Quaternion.AngleAxis(angle, rotationAxis.normalized);
     }
 
-    public void CycleAnimation()
+    private void HandleCycleAnimation()
     {
-        fadeTime += Time.deltaTime;
-        currentTimeMultiplier = (Mathf.Cos(2 * Mathf.PI * fadeTime / fadeSpeed + Mathf.PI) + 1) / 2;
+        // Increment the cycle timer
+        _cycleTimer += Time.deltaTime;
 
+        if (!_isCycling && _cycleTimer >= cycleInterval)
+        {
+            rotationAxis = Random.insideUnitSphere;
+            // Start the cycle animation
+            _cycleTimer = 0f;
+            _isCycling = true;
+        }
 
+        if (_isCycling)
+        {
+            // Perform the fade effect
+            currentAmplitudeMultiplier = (Mathf.Cos(2 * Mathf.PI * _cycleTimer / fadeSpeed + Mathf.PI) + 1) / 2 - 0.5f;
 
+            // End the cycle animation after one full fade cycle
+            if (_cycleTimer >= 0.75 * fadeSpeed)
+            {
+                _isCycling = false;
+                _cycleTimer = 0f;
+            }
+        }
     }
 }
