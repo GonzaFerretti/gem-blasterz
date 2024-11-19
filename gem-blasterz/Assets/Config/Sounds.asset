@@ -33,7 +33,7 @@ MonoBehaviour:
     file: {fileID: 8300000, guid: 74164e1fe139cda48bb673a55e5b9be2, type: 3}
     volume: 0.498
     pitch: 1
-    shouldLoop: 1
+    shouldLoop: 0
     isSpatial: 1
     position: {x: 0, y: 0, z: 0}
     positionIdentifier: 
