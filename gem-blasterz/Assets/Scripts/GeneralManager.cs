@@ -12,6 +12,12 @@ public class GeneralManager : MonoBehaviour
     
     [SerializeField] 
     private PuzzlerBoard player2Board;
+    
+    [SerializeField] 
+    private ShooterController player3Shooter;
+    
+    [SerializeField] 
+    private ShooterController player4Shooter;
 
     [SerializeField] 
     private GameConfig gameConfig;
@@ -22,8 +28,15 @@ public class GeneralManager : MonoBehaviour
     [SerializeField] 
     private int forceSeed = -1;
 
+    [SerializeField] 
+    private bool initialized;
+
     public static GameConfig GameConfig;
     public static SoundManager Sound;
+
+    private static GeneralManager instance;
+    public static bool GameStarted => instance != null && instance.initialized;
+    
     private float boardTurnTimer = 0;
     private float p1TurnTimer = 0;
     private float p1HeldPressTimer = 0;
@@ -32,13 +45,38 @@ public class GeneralManager : MonoBehaviour
     
     private void Start()
     {
+        instance = this;
         Sound = sound;
         GameConfig = gameConfig;
         uint seed = forceSeed > 0 ? (uint)forceSeed : (uint)Random.Range(1, uint.MaxValue);
         Debug.Log($"CurrentSeed: {seed}");
+
+        int gamepadCount = 0;
+        foreach (var inputDevice in InputSystem.devices)
+        {
+            if (inputDevice is Gamepad)
+                ++gamepadCount;
+        }
+        
+        if (gamepadCount < 3)
+        {
+            Debug.LogError($"Not enough input devices, currently we have {gamepadCount}, we need 3");
+            return;
+        }
+        
+        if (player1Board == null || player2Board == null || player3Shooter == null || player4Shooter == null)
+        {
+            Debug.LogError("Missing game components");
+            return;
+        }
+        
         player1Board.Initialize(seed);
         player2Board.Initialize(seed);
-        
+        player3Shooter.Initialize();
+        player4Shooter.Initialize();
+
+        initialized = true;
+
         // Ensure both players have no devices initially
         // if (player1Board.PlayerInput.user.valid)
         //     player1Board.PlayerInput.user.UnpairDevices();
@@ -67,6 +105,9 @@ public class GeneralManager : MonoBehaviour
 
     private void Update()
     {
+        if (!GeneralManager.GameStarted)
+            return;
+        
         if (TryAdvanceTurn(ref p1HeldPressTimer, GameConfig.heldPressTurnTimeMultiplier))
         {
             player1Board.TryMoveHeld();

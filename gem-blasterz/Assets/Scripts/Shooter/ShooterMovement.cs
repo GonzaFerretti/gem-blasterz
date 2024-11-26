@@ -20,6 +20,8 @@ public class ShooterController : MonoBehaviour
     [SerializeField] private float fireCooldown = 1f;
     private bool isDisabled = false;
 
+    [SerializeField] private PlayerInput playerInput; 
+
     private float lastFireTime; 
 
     public void decreaseHP(float damage){
@@ -28,6 +30,11 @@ public class ShooterController : MonoBehaviour
         {
             StartCoroutine(HandleDeath());
         }
+    }
+
+    public void Initialize()
+    {
+        playerInput.enabled = true;
     }
 
     private void Awake()
@@ -42,6 +49,8 @@ public class ShooterController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!GeneralManager.GameStarted) return;
+        
         if (isDisabled)
             return;
         healthBar.value = hp / maxHP;

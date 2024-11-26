@@ -129,6 +129,9 @@ namespace Puzzler
 
         public void Update()
         {
+            if (!GeneralManager.GameStarted)
+                return;
+            
             if (Input.GetKeyDown(KeyCode.H))
             {
                 ComboSounds.PlayComboSound(new OnPuzzlerMatch.CurrentCombo(){ comboCount = 1});
@@ -200,6 +203,8 @@ namespace Puzzler
                 nextPieces.Add(GeneratePieceConfiguriation());
 
             UpdateCurrentPreview();
+
+            playerInput.enabled = true;
 
             foreach (var inputAction in playerInput.actions)
             {
