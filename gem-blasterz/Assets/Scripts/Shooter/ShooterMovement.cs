@@ -32,7 +32,7 @@ public class ShooterController : MonoBehaviour
         }
     }
 
-    public void Initialize()
+    public void InitializeInput()
     {
         playerInput.enabled = true;
     }

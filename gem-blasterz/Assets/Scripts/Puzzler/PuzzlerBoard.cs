@@ -204,8 +204,15 @@ namespace Puzzler
 
             UpdateCurrentPreview();
 
-            playerInput.enabled = true;
+            if (ship != null)
+            {
+                GeneralManager.Sound.PlayAtPos("spaceShipHum", ship.transform.position, gameObject.name);
+            }
+        }
 
+        public void InitializeInput()
+        {
+            playerInput.enabled = true;
             foreach (var inputAction in playerInput.actions)
             {
                 if (inputAction.name == "Move")
@@ -216,11 +223,6 @@ namespace Puzzler
                 {
                     inputAction.performed += OnRotateRequested;
                 }
-            }
-
-            if (ship != null)
-            {
-                GeneralManager.Sound.PlayAtPos("spaceShipHum", ship.transform.position, gameObject.name);
             }
         }
 

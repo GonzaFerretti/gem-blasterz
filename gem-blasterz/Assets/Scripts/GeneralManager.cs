@@ -7,6 +7,13 @@ using Random = UnityEngine.Random;
 
 public class GeneralManager : MonoBehaviour
 {
+    private enum TestMode
+    {
+        None,
+        OnlyPuzzlers,
+        OnlyShooters
+    }
+    
     [SerializeField] 
     private PuzzlerBoard player1Board;
     
@@ -31,6 +38,9 @@ public class GeneralManager : MonoBehaviour
     [SerializeField] 
     private bool initialized;
 
+    [SerializeField] 
+    private TestMode testMode;
+
     public static GameConfig GameConfig;
     public static SoundManager Sound;
 
@@ -50,7 +60,35 @@ public class GeneralManager : MonoBehaviour
         GameConfig = gameConfig;
         uint seed = forceSeed > 0 ? (uint)forceSeed : (uint)Random.Range(1, uint.MaxValue);
         Debug.Log($"CurrentSeed: {seed}");
+        
+        if (testMode == TestMode.None && !CheckGamepadCount()) return;
 
+        if (player1Board == null || player2Board == null || player3Shooter == null || player4Shooter == null)
+        {
+            Debug.LogError("Missing game components");
+            return;
+        }
+
+        player1Board.Initialize(seed);
+        player2Board.Initialize(seed);
+        
+        if (testMode != TestMode.OnlyShooters)
+        {
+            player1Board.InitializeInput();
+            player2Board.InitializeInput();
+        }
+
+        if (testMode != TestMode.OnlyPuzzlers)
+        {
+            player3Shooter.InitializeInput();
+            player4Shooter.InitializeInput();
+        }
+
+        initialized = true;
+    }
+
+    private static bool CheckGamepadCount()
+    {
         int gamepadCount = 0;
         foreach (var inputDevice in InputSystem.devices)
         {
@@ -61,46 +99,10 @@ public class GeneralManager : MonoBehaviour
         if (gamepadCount < 3)
         {
             Debug.LogError($"Not enough input devices, currently we have {gamepadCount}, we need 3");
-            return;
+            return false;
         }
-        
-        if (player1Board == null || player2Board == null || player3Shooter == null || player4Shooter == null)
-        {
-            Debug.LogError("Missing game components");
-            return;
-        }
-        
-        player1Board.Initialize(seed);
-        player2Board.Initialize(seed);
-        player3Shooter.Initialize();
-        player4Shooter.Initialize();
 
-        initialized = true;
-
-        // Ensure both players have no devices initially
-        // if (player1Board.PlayerInput.user.valid)
-        //     player1Board.PlayerInput.user.UnpairDevices();
-        //
-        // if (player2Board.PlayerInput.user.valid)
-        //     player2Board.PlayerInput.user.UnpairDevices();
-
-        // Get all gamepads
-        // var gamepads = Gamepad.all;
-        //
-        // // Assign keyboard to Player 1
-        // InputUser.PerformPairingWithDevice(Keyboard.current, player1Board.PlayerInput.user);
-        // player1Board.PlayerInput.SwitchCurrentControlScheme("Keyboard", Keyboard.current);
-        //
-        // // Assign the first gamepad to Player 2, if available
-        // if (gamepads.Count > 0)
-        // {
-        //     InputUser.PerformPairingWithDevice(gamepads[0], player2Board.PlayerInput.user);
-        //     player2Board.PlayerInput.SwitchCurrentControlScheme("Gamepad", gamepads[0]);
-        // }
-        // else
-        // {
-        //     Debug.LogWarning("No gamepads available for Player 2!");
-        // }
+        return true;
     }
 
     private void Update()
