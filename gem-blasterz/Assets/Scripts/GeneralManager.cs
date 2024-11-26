@@ -40,9 +40,13 @@ public class GeneralManager : MonoBehaviour
 
     [SerializeField] 
     private TestMode testMode;
+    
+    [SerializeField]
+    private Material bgMaterial;
 
     public static GameConfig GameConfig;
     public static SoundManager Sound;
+    
 
     private static GeneralManager instance;
     public static bool GameStarted => instance != null && instance.initialized;
@@ -58,6 +62,7 @@ public class GeneralManager : MonoBehaviour
         instance = this;
         Sound = sound;
         GameConfig = gameConfig;
+        bgMaterial.SetInt("_ShouldScroll", 1);
         uint seed = forceSeed > 0 ? (uint)forceSeed : (uint)Random.Range(1, uint.MaxValue);
         Debug.Log($"CurrentSeed: {seed}");
         
@@ -85,6 +90,11 @@ public class GeneralManager : MonoBehaviour
         }
 
         initialized = true;
+    }
+
+    private void OnDestroy()
+    {
+        bgMaterial.SetInt("_ShouldScroll", 0);
     }
 
     private static bool CheckGamepadCount()

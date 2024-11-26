@@ -47,9 +47,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player1Board: {fileID: 0}
   player2Board: {fileID: 0}
+  player3Shooter: {fileID: 0}
+  player4Shooter: {fileID: 0}
   gameConfig: {fileID: 11400000, guid: 16f2aca8112e40f4bbbba738ee98a0fa, type: 2}
   sound: {fileID: 38322342129946270}
   forceSeed: -1
+  initialized: 0
+  testMode: 0
+  bgMaterial: {fileID: 2100000, guid: 6f8f0c02541710541b4bae6675df4835, type: 2}
 --- !u!114 &38322342129946270
 MonoBehaviour:
   m_ObjectHideFlags: 0
