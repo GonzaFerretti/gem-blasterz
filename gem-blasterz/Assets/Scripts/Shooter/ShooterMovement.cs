@@ -127,7 +127,7 @@ public class ShooterController : MonoBehaviour, IDamageReceiver
         if (Time.time >= lastFireTime + fireCooldown && !isDisabled){
             GameObject bullet = Instantiate(bulletPrefab,firePoint.position,Quaternion.identity);
             Vector3 shootDirection = (markerTransform.position - firePoint.position).normalized;
-            bullet.GetComponent<Bullet>().Initialize(shootDirection,this.gameObject);
+            bullet.GetComponent<Bullet>().Initialize(shootDirection, team);
             lastFireTime = Time.time;
         }
     }

@@ -8,14 +8,14 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float speed = 25f;
     [SerializeField] private float lifetime = 6f; 
     [SerializeField] private int damage = 2;
-    [SerializeField] private GameObject shooter;
+    [SerializeField] private Team team;
 
     private Vector3 direction;
 
-    public void Initialize(Vector3 shootDirection, GameObject shooter)
+    public void Initialize(Vector3 shootDirection, Team team)
     {
         this.direction = shootDirection.normalized;
-        this.shooter = shooter;
+        this.team = team;
     }
 
     private void Update()
@@ -26,26 +26,12 @@ public class Bullet : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         GameObject collidedObject = other.gameObject;
-        if (other.gameObject == shooter)
-        {
-            return;
-        };
 
-        var properHit = false;
-        if (collidedObject.TryGetComponent<ShooterController>(out var otherShooter))
+        if (collidedObject.TryGetComponent<IDamageReceiver>(out var receiver) && receiver.CanDamage(team))
         {
-            otherShooter.ReceiveDamage(damage);
-            properHit = true;
-        }
-
-        if (collidedObject.TryGetComponent<Ship>(out var hitShip))
-        {
-            hitShip.ReceiveDamage();
-            properHit = true;
-        }
-        
-        if (properHit)
+            receiver.ReceiveDamage(damage);
             Destroy(gameObject);
+        }
     }
 
     private void Start()
