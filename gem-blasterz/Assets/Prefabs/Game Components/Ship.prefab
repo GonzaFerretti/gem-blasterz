@@ -431,6 +431,7 @@ GameObject:
   - component: {fileID: 4880509877471255352}
   - component: {fileID: 6962077072480855923}
   - component: {fileID: 7853827017715617711}
+  - component: {fileID: 5126965902978310057}
   m_Layer: 0
   m_Name: Ship
   m_TagString: Untagged
@@ -545,6 +546,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainMesh: {fileID: 4880509877471255352}
+--- !u!64 &5126965902978310057
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3769281614160256748}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8560983438618332626, guid: b21b9583dc0dbfb4fb2a31d2d97d286d, type: 3}
 --- !u!1 &3785235868965381831
 GameObject:
   m_ObjectHideFlags: 0

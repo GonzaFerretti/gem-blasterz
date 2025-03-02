@@ -380,22 +380,22 @@
                 },
                 {
                     "name": "",
-                    "id": "727c9b8e-8e3d-4481-9bac-44fbc3f4a18c",
-                    "path": "<Gamepad>/rightTrigger",
+                    "id": "d24de132-c27e-4af4-bf7d-ee3498b190b9",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Keyboard",
                     "action": "Fire",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "d24de132-c27e-4af4-bf7d-ee3498b190b9",
-                    "path": "<Mouse>/leftButton",
+                    "id": "727c9b8e-8e3d-4481-9bac-44fbc3f4a18c",
+                    "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard",
+                    "groups": "Gamepad",
                     "action": "Fire",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -412,7 +412,7 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "KB",
+                    "name": "KB - Arrow Keys",
                     "id": "7558fcc3-49f8-44d2-a7d5-1d9290448c14",
                     "path": "2DVector",
                     "interactions": "",
@@ -465,6 +465,61 @@
                     "action": "MoveShooter",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "KB - WASD",
+                    "id": "e1a4e98f-20d2-497e-9ef9-777cae921d6a",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveShooter",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "f9da3f8e-dc01-4eaa-986a-057300bd4945",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveShooter",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "19d937bb-8618-457d-8291-f78ebe310760",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveShooter",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "d036789d-f0b2-43a0-ad84-cef60aa7b986",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveShooter",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "d8f6c9a2-3ac2-4b6a-80ac-aca089e1f5f3",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveShooter",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }
@@ -476,6 +531,11 @@
             "devices": [
                 {
                     "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Mouse>",
                     "isOptional": false,
                     "isOR": false
                 }
