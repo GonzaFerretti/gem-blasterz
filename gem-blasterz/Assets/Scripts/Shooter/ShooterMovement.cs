@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,18 +7,26 @@ using UnityEngine.UI;
 
 public class ShooterController : MonoBehaviour
 {
+    [Header("Config Variables")]
     [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float deceleration = 0.1f;
+    [SerializeField] private float accelSpeed = 5f;
     [SerializeField] private float aimSpeed = 5f;
-    private Vector2 moveInput;
+    [SerializeField] private float fireCooldown = 1f;
+    
+    [Header("Read-only")]
+    [SerializeField, ReadOnly] private Vector2 moveInput;
+    [SerializeField, ReadOnly] private float speed;
     private Vector2 markerInput;
-    private Rigidbody shooterRB;
-    [SerializeField] private Transform markerTransform;
     private float maxHP = 10f;
     private float hp = 10f;
+    
+    [Header("References")]
+    [SerializeField] private Transform markerTransform;
     [SerializeField] private Slider healthBar;
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private float fireCooldown = 1f;
+    private Rigidbody shooterRB;
     private bool isDisabled = false;
 
     [SerializeField] private PlayerInput playerInput; 
@@ -54,9 +63,20 @@ public class ShooterController : MonoBehaviour
         if (isDisabled)
             return;
         healthBar.value = hp / maxHP;
-        Vector3 movement = new Vector3(0f, moveInput.y, moveInput.x);
-        shooterRB.velocity = movement * moveSpeed;
-        Vector3 markerMovement = new Vector3(0f, markerInput.y, markerInput.x);
+        Vector3 movement = new Vector3(moveInput.x, moveInput.y, 0);
+        shooterRB.velocity += movement * accelSpeed;
+        var maxLength = shooterRB.velocity.magnitude;
+
+        var inputSize = movement.magnitude;
+        if (inputSize == 0)
+        {
+            shooterRB.velocity -= shooterRB.velocity.normalized * (Math.Min(maxLength, deceleration * Time.deltaTime));
+        }
+
+        var max = inputSize > 0 ?  moveSpeed * inputSize : moveSpeed;
+        shooterRB.velocity = shooterRB.velocity.normalized * Math.Clamp(shooterRB.velocity.magnitude, 0, max);
+        speed = shooterRB.velocity.magnitude;
+        Vector3 markerMovement = new Vector3(markerInput.x, markerInput.y, 0f);
         markerTransform.position += markerMovement * aimSpeed * Time.deltaTime;
     }
     public void OnAim(InputAction.CallbackContext context)

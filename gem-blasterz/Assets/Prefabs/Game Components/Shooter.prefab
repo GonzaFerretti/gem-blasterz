@@ -407,7 +407,7 @@ Transform:
   - {fileID: 7455155194882776706}
   - {fileID: 8750953065367590159}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -15.909, y: 0, z: 0}
 --- !u!33 &6205893704048931439
 MeshFilter:
@@ -521,14 +521,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2d97bba3d32e13418f5f231661dac74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 15
+  moveSpeed: 50
+  deceleration: 190
+  accelSpeed: 20
   aimSpeed: 45
+  fireCooldown: 1
+  moveInput: {x: 0, y: 0}
+  speed: 0
   markerTransform: {fileID: 0}
   healthBar: {fileID: 2673160858716980942}
   bulletPrefab: {fileID: 8949604552220483258, guid: 4d16a67cc64454a46b33dc98b426098b,
     type: 3}
   firePoint: {fileID: 8750953065367590159}
-  fireCooldown: 1
   playerInput: {fileID: 434705682421469137}
 --- !u!114 &434705682421469137
 MonoBehaviour:
