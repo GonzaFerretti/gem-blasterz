@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Shooter;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -29,12 +30,22 @@ public class Bullet : MonoBehaviour
         {
             return;
         };
-        if (collidedObject.CompareTag("Player"))
+
+        var properHit = false;
+        if (collidedObject.TryGetComponent<ShooterController>(out var otherShooter))
         {
-            collidedObject.GetComponent<ShooterController>().decreaseHP(damage);
+            otherShooter.ReceiveDamage(damage);
+            properHit = true;
         }
-        Debug.Log($"Hit player: {collidedObject.name}, applying {damage} damage.");
-        Destroy(gameObject);
+
+        if (collidedObject.TryGetComponent<Ship>(out var hitShip))
+        {
+            hitShip.ReceiveDamage();
+            properHit = true;
+        }
+        
+        if (properHit)
+            Destroy(gameObject);
     }
 
     private void Start()

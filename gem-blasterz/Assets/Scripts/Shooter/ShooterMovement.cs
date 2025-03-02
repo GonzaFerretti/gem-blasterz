@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Shooter;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class ShooterController : MonoBehaviour
+public class ShooterController : MonoBehaviour, IDamageReceiver
 {
     [Header("Config Variables")]
     [SerializeField] private float moveSpeed = 5f;
@@ -14,6 +15,7 @@ public class ShooterController : MonoBehaviour
     [SerializeField] private float aimSpeed = 5f;
     [SerializeField] private float fireCooldown = 1f;
     [SerializeField] private float fireIndicatorDistance = 20f;
+    [SerializeField] private Team team;
     
     [Header("Read-only")]
     [SerializeField, ReadOnly] private Vector2 moveInput;
@@ -38,15 +40,7 @@ public class ShooterController : MonoBehaviour
     private InputAction fireAction;
     
 
-    private float lastFireTime; 
-
-    public void decreaseHP(float damage){
-        hp = Mathf.Max(hp - damage,0);
-        if (hp <= 0)
-        {
-            StartCoroutine(HandleDeath());
-        }
-    }
+    private float lastFireTime;
 
     public void InitializeInput()
     {
@@ -72,7 +66,7 @@ public class ShooterController : MonoBehaviour
         if (playerInput.currentControlScheme == "Keyboard")
         {
             Vector3 mousePos = Input.mousePosition;
-            markerInput = (mousePos - Camera.main.WorldToScreenPoint(transform.position)).normalized;
+            markerInput = (mousePos - Camera.main.WorldToScreenPoint(firePoint.position)).normalized;
         }
         else
         {
@@ -108,7 +102,7 @@ public class ShooterController : MonoBehaviour
         {
             lastValidAimInput = markerMovement.normalized;
         }
-        markerTransform.position = transform.position + lastValidAimInput * fireIndicatorDistance;
+        markerTransform.position = firePoint.position + lastValidAimInput * fireIndicatorDistance;
 
     }
 
@@ -131,7 +125,6 @@ public class ShooterController : MonoBehaviour
 
     public void ProcessFire(){
         if (Time.time >= lastFireTime + fireCooldown && !isDisabled){
-            Debug.Log("Shooting");
             GameObject bullet = Instantiate(bulletPrefab,firePoint.position,Quaternion.identity);
             Vector3 shootDirection = (markerTransform.position - firePoint.position).normalized;
             bullet.GetComponent<Bullet>().Initialize(shootDirection,this.gameObject);
@@ -151,5 +144,19 @@ public class ShooterController : MonoBehaviour
         Debug.Log("Player recovered!");
         hp = maxHP;
         isDisabled = false;
+    }
+
+    public bool CanDamage(Team team)
+    {
+        return team != this.team;
+    }
+
+    public void ReceiveDamage(float damage)
+    {
+        hp = Mathf.Max(hp - damage,0);
+        if (hp <= 0)
+        {
+            StartCoroutine(HandleDeath());
+        }
     }
 }
