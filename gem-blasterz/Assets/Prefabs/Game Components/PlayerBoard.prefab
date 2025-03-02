@@ -208,6 +208,18 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: d5c77f10-01b7-46e8-afac-af3757dab4c8
     m_ActionName: Gameplay/FallFaster[/Keyboard/downArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 7836ffd0-6f98-4adb-98aa-03264d4fbbd2
+    m_ActionName: Gameplay/Aim[/XInputControllerWindows/rightStick]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: cd3cac75-de1a-4abc-9e20-2c8c9a2364a4
+    m_ActionName: Gameplay/Fire[/Keyboard/space,/XInputControllerWindows/rightTrigger]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 3fa5d0df-73b7-4405-9853-958811681fc3
+    m_ActionName: Gameplay/MoveShooter[/XInputControllerWindows/leftStick,/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow]
   m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: 
   m_DefaultActionMap: Gameplay

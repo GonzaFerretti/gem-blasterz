@@ -13,9 +13,12 @@ public class ShooterController : MonoBehaviour
     [SerializeField] private float accelSpeed = 5f;
     [SerializeField] private float aimSpeed = 5f;
     [SerializeField] private float fireCooldown = 1f;
+    [SerializeField] private float fireIndicatorDistance = 20f;
     
     [Header("Read-only")]
     [SerializeField, ReadOnly] private Vector2 moveInput;
+    [SerializeField, ReadOnly] private Vector3 lastValidAimInput;
+    [SerializeField, ReadOnly] private bool wantsFire;
     [SerializeField, ReadOnly] private float speed;
     private Vector2 markerInput;
     private float maxHP = 10f;
@@ -29,7 +32,11 @@ public class ShooterController : MonoBehaviour
     private Rigidbody shooterRB;
     private bool isDisabled = false;
 
-    [SerializeField] private PlayerInput playerInput; 
+    [SerializeField] private PlayerInput playerInput;
+    private InputAction moveAction;
+    private InputAction aimAction;
+    private InputAction fireAction;
+    
 
     private float lastFireTime; 
 
@@ -44,6 +51,9 @@ public class ShooterController : MonoBehaviour
     public void InitializeInput()
     {
         playerInput.enabled = true;
+        moveAction = playerInput.actions.FindAction("MoveShooter");
+        aimAction = playerInput.actions.FindAction("Aim");
+        fireAction = playerInput.actions.FindAction("Fire");
     }
 
     private void Awake()
@@ -51,10 +61,27 @@ public class ShooterController : MonoBehaviour
         shooterRB = GetComponent<Rigidbody>();
     }
 
-    public void OnMove(InputAction.CallbackContext context)
+    private void ReadInputs()
     {
-        moveInput = context.ReadValue<Vector2>();
+        // Move
+        moveInput = moveAction.ReadValue<Vector2>();
         moveInput = moveInput.normalized * Math.Min(1, moveInput.magnitude);
+        
+        // Aim
+        
+        if (playerInput.currentControlScheme == "Keyboard")
+        {
+            Vector3 mousePos = Input.mousePosition;
+            markerInput = (mousePos - Camera.main.WorldToScreenPoint(transform.position)).normalized;
+        }
+        else
+        {
+            markerInput = aimAction.ReadValue<Vector2>();
+            markerInput = markerInput.normalized * Math.Min(1, markerInput.magnitude);
+        }
+        
+        // Fire
+        wantsFire = fireAction.ReadValue<float>() > 0;
     }
 
     private void FixedUpdate()
@@ -63,7 +90,30 @@ public class ShooterController : MonoBehaviour
         
         if (isDisabled)
             return;
+        
+        ReadInputs();
+        
         healthBar.value = hp / maxHP;
+        ProcessMovement();
+        ProcessAim();
+        
+        if (wantsFire)
+            ProcessFire();
+    }
+
+    private void ProcessAim()
+    {
+        Vector3 markerMovement = new Vector3(markerInput.x, markerInput.y, 0f);
+        if (markerMovement.magnitude != 0)
+        {
+            lastValidAimInput = markerMovement.normalized;
+        }
+        markerTransform.position = transform.position + lastValidAimInput * fireIndicatorDistance;
+
+    }
+
+    private void ProcessMovement()
+    {
         Vector3 movement = new Vector3(moveInput.x, moveInput.y, 0);
         shooterRB.velocity += movement * accelSpeed;
         var maxLength = shooterRB.velocity.magnitude;
@@ -77,15 +127,9 @@ public class ShooterController : MonoBehaviour
         var max = inputSize > 0 ?  moveSpeed * inputSize : moveSpeed;
         shooterRB.velocity = shooterRB.velocity.normalized * Math.Clamp(shooterRB.velocity.magnitude, 0, max);
         speed = shooterRB.velocity.magnitude;
-        Vector3 markerMovement = new Vector3(markerInput.x, markerInput.y, 0f);
-        markerTransform.position += markerMovement * aimSpeed * Time.deltaTime;
-    }
-    public void OnAim(InputAction.CallbackContext context)
-    {
-        markerInput = context.ReadValue<Vector2>();
     }
 
-    public void Shoot(){
+    public void ProcessFire(){
         if (Time.time >= lastFireTime + fireCooldown && !isDisabled){
             Debug.Log("Shooting");
             GameObject bullet = Instantiate(bulletPrefab,firePoint.position,Quaternion.identity);
