@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 public class AsteroidBehaviour : MonoBehaviour
 {
-    public float deathThreshold, rotSpeed;
+    public float deathThreshold, rotSpeed, velocity;
     Rigidbody rb;
     
 
@@ -17,20 +17,24 @@ public class AsteroidBehaviour : MonoBehaviour
 
     void Update()
     {
-        transform.localRotation = Quaternion.AngleAxis(Time.deltaTime * rotSpeed, transform.up);
+        //transform.localRotation = Quaternion.AngleAxis(Time.deltaTime * rotSpeed, transform.up);
         //transform.Rotate(transform.up, rotSpeed);
         if (transform.position.y > deathThreshold)
         {
             Destroy(this.gameObject);
         }
+
+        transform.position += Vector3.up * Time.deltaTime * velocity;
+        transform.Rotate(transform.up, Time.deltaTime * rotSpeed);
     }
 
-    public void Init(float rotSpeed, float vel, float posX, float scale, float death)
+    public void Init(float _rotSpeed, float vel, float posX, float scale, float death)
     {
         transform.rotation = Random.rotation;
         transform.localScale = new Vector3(scale, scale, scale);
         transform.position = new Vector3(transform.position.x + posX, transform.position.y, transform.position.z);
-        GetComponent<Rigidbody>().velocity = new Vector3(0, vel, 0);
         deathThreshold = death;
+        velocity = vel;
+        rotSpeed = _rotSpeed;
     }
 }
