@@ -54,6 +54,7 @@ public class ShooterController : MonoBehaviour
     public void OnMove(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
+        moveInput = moveInput.normalized * Math.Min(1, moveInput.magnitude);
     }
 
     private void FixedUpdate()
