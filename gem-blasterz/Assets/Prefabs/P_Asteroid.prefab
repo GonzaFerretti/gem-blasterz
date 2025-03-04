@@ -194,6 +194,7 @@ MonoBehaviour:
   deathThreshold: 0
   rotSpeed: 0
   velocity: 0
+  trail: {fileID: 6611872893838841294}
 --- !u!1 &2565543816127396755
 GameObject:
   m_ObjectHideFlags: 0

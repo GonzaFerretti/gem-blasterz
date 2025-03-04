@@ -1,18 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class AsteroidSpawner : MonoBehaviour
 {
-    public GameObject asteroid;
+    public AsteroidBehaviour asteroid;
     public float asteroidsSpeed, minAsteroidSize, maxAsteroidSize, spawnFrequency, xPosAmplitude, minAsteroidRotSpeed, maxAsteroidRotSpeed, asteroidDeathThreshold;
+    public int asteroidPoolInitialCount = 25;
     public List<GameObject> asteroids;
+
+    public ObjectPool<AsteroidBehaviour> asteroidPool;
     public float timer, spawnSide = 1, xPosition;
 
     void Start()
     {
+        asteroidPool = new ObjectPool<AsteroidBehaviour>(
+            CreateNew, 
+            PrepareAsteroid, 
+            instance => instance.gameObject.SetActive(false), defaultCapacity: asteroidPoolInitialCount);
         asteroids = new List<GameObject>();
         SpawnAsteroid();
+    }
+
+    private AsteroidBehaviour CreateNew()
+    {
+        AsteroidBehaviour newAsteroid = Instantiate(asteroid, transform);
+        newAsteroid.transform.position = transform.position;
+        newAsteroid.OnDestroy += destroyedAsteroid => asteroidPool.Release(destroyedAsteroid);
+        return newAsteroid;
+    }
+
+    private void PrepareAsteroid(AsteroidBehaviour instance)
+    {
+        instance.transform.position = transform.position;
+        instance.gameObject.SetActive(true);
     }
 
     void Update()
@@ -29,10 +51,8 @@ public class AsteroidSpawner : MonoBehaviour
     {
         xPosition = Random.Range(0, Mathf.Abs(xPosAmplitude));
         spawnSide = spawnSide * -1;
-        GameObject newAsteroid = Instantiate(asteroid);
-        newAsteroid.transform.position = transform.position;
-        newAsteroid.transform.parent = transform;
-        newAsteroid.GetComponent<AsteroidBehaviour>().Init(Random.Range(minAsteroidRotSpeed, maxAsteroidRotSpeed), 
+        var instance = asteroidPool.Get();
+        instance.Init(Random.Range(minAsteroidRotSpeed, maxAsteroidRotSpeed), 
             asteroidsSpeed, 
             xPosition * spawnSide, 
             Random.Range(minAsteroidSize, maxAsteroidSize),

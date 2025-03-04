@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0fc58bdf766b9146af2d20b6a1efdef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  asteroid: {fileID: 2535507881521370271, guid: 00cb699a9fc629047916f5ef613f3be1,
+  asteroid: {fileID: -4902005340356464593, guid: 00cb699a9fc629047916f5ef613f3be1,
     type: 3}
   asteroidsSpeed: 16
   minAsteroidSize: 0.17

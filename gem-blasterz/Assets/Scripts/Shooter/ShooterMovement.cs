@@ -13,7 +13,6 @@ public class ShooterController : MonoBehaviour, IDamageReceiver
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float deceleration = 0.1f;
     [SerializeField] private float accelSpeed = 5f;
-    [SerializeField] private float aimSpeed = 5f;
     [SerializeField] private float fireCooldown = 1f;
     [SerializeField] private float fireIndicatorDistance = 20f;
     [SerializeField] private Team team;
