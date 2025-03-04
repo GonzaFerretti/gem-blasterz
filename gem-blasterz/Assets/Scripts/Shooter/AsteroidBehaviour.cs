@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using Shooter;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class AsteroidBehaviour : MonoBehaviour
+public class AsteroidBehaviour : MonoBehaviour, IDamageReceiver
 {
     public float deathThreshold, rotSpeed, velocity;
     Rigidbody rb;
@@ -36,5 +37,15 @@ public class AsteroidBehaviour : MonoBehaviour
         deathThreshold = death;
         velocity = vel;
         rotSpeed = _rotSpeed;
+    }
+
+    public bool CanDamage(Team team)
+    {
+        return true;
+    }
+
+    public void ReceiveDamage(float damage)
+    {
+        Destroy(this.gameObject);
     }
 }

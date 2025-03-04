@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public class ShooterController : MonoBehaviour, IDamageReceiver
 {
+    
     [Header("Config Variables")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float deceleration = 0.1f;
@@ -16,12 +17,16 @@ public class ShooterController : MonoBehaviour, IDamageReceiver
     [SerializeField] private float fireCooldown = 1f;
     [SerializeField] private float fireIndicatorDistance = 20f;
     [SerializeField] private Team team;
+    [SerializeField] private Bounds movementBounds;
+    [SerializeField] private float boundsCheckRadius;
+    [SerializeField] private Vector3 boundsCheckCenterOffset;
     
     [Header("Read-only")]
     [SerializeField, ReadOnly] private Vector2 moveInput;
     [SerializeField, ReadOnly] private Vector3 lastValidAimInput;
     [SerializeField, ReadOnly] private bool wantsFire;
     [SerializeField, ReadOnly] private float speed;
+    [SerializeField, ReadOnly] private Vector3 velocity;
     private Vector2 markerInput;
     private float maxHP = 10f;
     private float hp = 10f;
@@ -31,6 +36,7 @@ public class ShooterController : MonoBehaviour, IDamageReceiver
     [SerializeField] private Slider healthBar;
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform firePoint;
+    [SerializeField] private Animator animator;
     private Rigidbody shooterRB;
     private bool isDisabled = false;
 
@@ -41,6 +47,10 @@ public class ShooterController : MonoBehaviour, IDamageReceiver
     
 
     private float lastFireTime;
+    private static readonly int ShootTrigger = Animator.StringToHash("Shoot");
+    private static readonly int DeadFlag = Animator.StringToHash("IsDead");
+    private static readonly int MoveXValue = Animator.StringToHash("MovX");
+    private static readonly int MoveYValue = Animator.StringToHash("MovY");
 
     public void InitializeInput()
     {
@@ -120,7 +130,62 @@ public class ShooterController : MonoBehaviour, IDamageReceiver
 
         var max = inputSize > 0 ?  moveSpeed * inputSize : moveSpeed;
         shooterRB.velocity = shooterRB.velocity.normalized * Math.Clamp(shooterRB.velocity.magnitude, 0, max);
+        
+        KeepPositionInsideBounds();
+        velocity = shooterRB.velocity;
+        
+        
+        animator.SetFloat(MoveXValue, Mathf.InverseLerp(0, speed, Math.Abs(shooterRB.velocity.x)) * Mathf.Sign(shooterRB.velocity.x));
+        animator.SetFloat(MoveYValue, Mathf.InverseLerp(0, speed, Math.Abs(shooterRB.velocity.y)) * Mathf.Sign(shooterRB.velocity.y));
         speed = shooterRB.velocity.magnitude;
+    }
+    
+    void KeepPositionInsideBounds()
+    {
+        Vector3 position = transform.position + boundsCheckCenterOffset; // Apply offset
+        Vector3 velocity = shooterRB.velocity;
+
+        // Calculate the min and max allowed positions within the bounds, considering the radius
+        Vector3 min = movementBounds.min + new Vector3(boundsCheckRadius, boundsCheckRadius, 0);
+        Vector3 max = movementBounds.max - new Vector3(boundsCheckRadius, boundsCheckRadius, 0);
+
+        // Check X axis
+        if (position.x < min.x)
+        {
+            position.x = min.x;
+            velocity.x = Mathf.Min(0, velocity.x); // Stop or reverse velocity
+        }
+        else if (position.x > max.x)
+        {
+            position.x = max.x;
+            velocity.x = Mathf.Max(0, velocity.x);
+        }
+
+        // Check Y axis
+        if (position.y < min.y)
+        {
+            position.y = min.y;
+            velocity.y = Mathf.Min(0, velocity.y);
+        }
+        else if (position.y > max.y)
+        {
+            position.y = max.y;
+            velocity.y = Mathf.Max(0, velocity.y);
+        }
+
+        // Apply the clamped position, adjusting for the offset
+        transform.position = position - boundsCheckCenterOffset;
+
+        // Apply the modified velocity
+        shooterRB.velocity = velocity;
+    }
+
+    [ExecuteInEditMode]
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(movementBounds.center, movementBounds.size);
+        Gizmos.DrawWireSphere(transform.position + boundsCheckCenterOffset, boundsCheckRadius);
     }
 
     public void ProcessFire(){
@@ -129,6 +194,7 @@ public class ShooterController : MonoBehaviour, IDamageReceiver
             Vector3 shootDirection = (markerTransform.position - firePoint.position).normalized;
             bullet.GetComponent<Bullet>().Initialize(shootDirection, team);
             lastFireTime = Time.time;
+            animator.SetTrigger(ShootTrigger);
         }
     }
 
@@ -138,17 +204,19 @@ public class ShooterController : MonoBehaviour, IDamageReceiver
         isDisabled = true; 
         Vector3 movement = new Vector3(0f,0f,0f);
         shooterRB.velocity = movement * moveSpeed;
+        animator.SetBool(DeadFlag, true);
 
         yield return new WaitForSeconds(5f); 
 
         Debug.Log("Player recovered!");
         hp = maxHP;
         isDisabled = false;
+        animator.SetBool(DeadFlag, false);
     }
 
     public bool CanDamage(Team team)
     {
-        return team != this.team;
+        return !isDisabled && team != this.team;
     }
 
     public void ReceiveDamage(float damage)

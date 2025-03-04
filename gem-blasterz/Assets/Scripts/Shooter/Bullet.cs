@@ -27,11 +27,16 @@ public class Bullet : MonoBehaviour
     {
         GameObject collidedObject = other.gameObject;
 
-        if (collidedObject.TryGetComponent<IDamageReceiver>(out var receiver) && receiver.CanDamage(team))
+        if (TryGetReceiver(collidedObject, out var receiver) && receiver.CanDamage(team))
         {
             receiver.ReceiveDamage(damage);
             Destroy(gameObject);
         }
+    }
+
+    private static bool TryGetReceiver(GameObject collidedObject, out IDamageReceiver receiver)
+    {
+        return collidedObject.TryGetComponent<IDamageReceiver>(out receiver) || (collidedObject.transform.parent != null && TryGetReceiver(collidedObject.transform.parent.gameObject, out receiver));
     }
 
     private void Start()
