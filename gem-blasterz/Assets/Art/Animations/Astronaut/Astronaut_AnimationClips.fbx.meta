@@ -1,9 +1,19 @@
 fileFormatVersion: 2
-guid: 106003c01ba998c4e9211abd5a296621
+guid: 6226e38c30f836649ae0949f9e5676ec
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: textura-completa
+    second: {fileID: 2100000, guid: 05b442bf54c1adb4c966d740aa1148d3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: vidrio
+    second: {fileID: 2100000, guid: c929f2ec6b161c445a05471e180cb6e3, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
