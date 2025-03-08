@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Puzzler;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -26,6 +27,10 @@ public class GeneralManager : MonoBehaviour
     [SerializeField] 
     private ShooterController player4Shooter;
 
+    [SerializeField] private Camera puzzlerP1, previewP1, puzzlerP2, previewP2;
+
+    [SerializeField] private bool enableCameras;
+
     [SerializeField] 
     private GameConfig gameConfig;
 
@@ -46,7 +51,6 @@ public class GeneralManager : MonoBehaviour
 
     public static GameConfig GameConfig;
     public static SoundManager Sound;
-    
 
     private static GeneralManager instance;
     public static bool GameStarted => instance != null && instance.initialized;
@@ -89,8 +93,30 @@ public class GeneralManager : MonoBehaviour
             player4Shooter.InitializeInput();
         }
 
+        previewP1.enabled = false;
+        previewP2.enabled = false;
+        puzzlerP1.enabled = false;
+        puzzlerP2.enabled = false;
+
+        player1Board.OnPreviewUpdated += () =>
+        {
+            if (enableCameras) return;
+            StartCoroutine(Test(previewP1));
+        };
+        player2Board.OnPreviewUpdated += () =>
+        {
+            if (enableCameras) return;
+            StartCoroutine(Test(previewP2));
+        };
+
         initialized = true;
     }
+
+    public IEnumerator Test(Camera cam)
+    {
+        yield return new WaitForEndOfFrame();
+        cam.Render();
+    } 
 
     private void OnDestroy()
     {
@@ -117,6 +143,18 @@ public class GeneralManager : MonoBehaviour
 
     private void Update()
     {
+        previewP1.enabled = enableCameras;
+        previewP2.enabled = enableCameras;
+
+        if (Time.frameCount % 2 == 0)
+        {
+            puzzlerP1.Render();
+        }
+        else
+        {
+            puzzlerP2.Render();
+        }
+        
         if (!GeneralManager.GameStarted)
             return;
         

@@ -62,7 +62,9 @@ namespace Puzzler
         private int comboCount = 0;
 
         [SerializeField] 
-        private OnPuzzlerMatch OnPuzzlerMatch; 
+        private OnPuzzlerMatch OnPuzzlerMatch;
+        
+        public Action OnPreviewUpdated;
 
         [Serializable]
         public struct GridSlot
@@ -192,6 +194,7 @@ namespace Puzzler
             prefab2.transform.position = RotateAround(prefab2.transform.position, center, firstNextConfig.turns);
 
             puzzlePreviewWidgetManager.UpdatePreviews(nextPieces);
+            OnPreviewUpdated?.Invoke();
         }
 
         public void Initialize(uint seed)

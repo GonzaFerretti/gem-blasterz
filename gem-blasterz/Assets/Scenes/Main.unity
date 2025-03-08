@@ -3409,6 +3409,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3254655138413473468, guid: f99e46a110d1b264f83f2fb77d76cd32,
         type: 3}
+      propertyPath: previewP1
+      value: 
+      objectReference: {fileID: 1035419028}
+    - target: {fileID: 3254655138413473468, guid: f99e46a110d1b264f83f2fb77d76cd32,
+        type: 3}
+      propertyPath: previewP2
+      value: 
+      objectReference: {fileID: 1459453742}
+    - target: {fileID: 3254655138413473468, guid: f99e46a110d1b264f83f2fb77d76cd32,
+        type: 3}
+      propertyPath: puzzlerP1
+      value: 
+      objectReference: {fileID: 536803870}
+    - target: {fileID: 3254655138413473468, guid: f99e46a110d1b264f83f2fb77d76cd32,
+        type: 3}
+      propertyPath: puzzlerP2
+      value: 
+      objectReference: {fileID: 2101210932}
+    - target: {fileID: 3254655138413473468, guid: f99e46a110d1b264f83f2fb77d76cd32,
+        type: 3}
       propertyPath: player1Board
       value: 
       objectReference: {fileID: 768981551}
