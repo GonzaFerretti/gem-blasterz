@@ -78,6 +78,9 @@ public class GeneralManager : MonoBehaviour
             return;
         }
 
+        Application.targetFrameRate = -1;
+        QualitySettings.vSyncCount = 0;
+
         player1Board.Initialize(seed);
         player2Board.Initialize(seed);
         
